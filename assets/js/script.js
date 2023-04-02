@@ -1,70 +1,174 @@
 /* Created by Anthony Hall */
-/* Updated on March 30, 2023 */
+/* Updated on April 2, 2023 */
 
-/* Variables for UTC conversion */
-const oneYear = 31556926;
-const oneMonth = 2629743;
-const oneWeek = 604800;
-const oneDay = 86400;
-const oneHour = 3600;
+/* Clear local storage */
+// localStorage.clear();
 
-var cityFormEl = document.querySelector("#city-form");
-var nameInputEl = document.querySelector("#cityName");
-var weatherContainerEl = document.querySelector("#weather-container");
-var citySearchTerm = document.querySelector("#city-search-term");
-var languageButtonsEl = document.querySelector("#language-buttons");
+/* Define global vars */
+let currentTime; 
+let currentTemp; 
+let currentFeelsLike;
+let currentPressure;
+let currentHumidity;
+let currentUVIndex;
+let currentClouds;
+let currentWindSpeed;
+let currentWindDegrees;
+let currentWeatherIcon;
+let currentWeatherIconURL;
+
+const dailyTime = [];
+const dailyTempDay = [];
+const dailyTempMax = [];
+const dailyTempMin = [];
+const dailySunrise = [];
+const dailySunset =  [];
+const dailyMoonRise = [];
+const dailyMoonSet = [];
+const dailyMoonPhase = [];
+const dailyHumidity = [];
+const dailyWindSpeed = [];
+const dailyWindDegrees = [];
+const dailyWeatherIcon = [];
+const dailyClouds = [];
+const dailyPOP = [];
+const dailyUVI = []; 
+
+let cityFormEl = document.querySelector("#city-form");
+let nameInputEl = document.querySelector("#cityName");
+let weatherContainerEl = document.querySelector("#weather-container");
+let citySearchTerm = document.querySelector("#city-search-term");
+let languageButtonsEl = document.querySelector("#language-buttons");
 
 var formSubmitHandler = function(event) {
     event.preventDefault();
     // get value from input element
-    var cityname = nameInputEl.value.trim();
+    var cityName = nameInputEl.value.trim();
 
-    if (cityname) {
-        getCityWeather(cityname);
+    if (cityName) {
+        getCityWeather(cityName);
         nameInputEl.value = "";
     } else {
         alert("Please enter a city.");
     }
 };
 
-var displayWeather = function(weatherData, searchTerm) {
-    // check if api returned any weatherData
+// Get All the weatherData By location
+var getCityWeather = function(location) {
+    console.log("the location is: " + location);
+
+    // format the github api url
+    var apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=37.77&lon=-122.42&appid=95b40b7251d7c4d04d5bc72b6c0d970e&units=imperial&exclude=hourly,minutely";
+     
+    // make a request to the url
+    fetch(apiUrl)
+        .then(function(response) {
+            // request was successful
+            if (response.ok) {
+                
+                response.json().then(function(data) {
+                    pullWeather(data, location);
+                    saveToStorage(location);
+                });
+            } else {
+                alert("Error: City could not be found.");
+            };
+        })
+        .catch(function(error) {
+            // Notice this `.catch()` getting chained onto the end of the `.then()` method
+            alert("Error: Hit the catch. City cound not be found.");
+        });
+};
+
+var saveToStorage = function(queryLocation, count) {
+    if (localStorage.getItem("Location") === null) {
+        // LocalStorage is empty
+        var obj = {
+            count: queryLocation 
+        }
+        var val = localStorage.setItem("Location", obj);
+    } else {
+        // LocalStorage is not empty
+        var val = localStorage.getItem("Location");
+        console.log(val);
+        // localStorage.setItem("Location", queryLocation);
+
+    };
+}
+
+var pullWeather = function(weatherData, searchTerm) {
+    // Check and verify if API returned any weatherData
     var size = Object.keys(weatherData).length;
     if (size === 0) {
-        weatherContainerEl.textContent = "No city by that name found.";
+        weatherContainerEl.textContent = "No city by that name found. Please try again.";
         return;
     }
-    // clear old content
+    // Clear old content just in case
     weatherContainerEl.textContent = "";
-    citySearchTerm.textContent = searchTerm;
+    citySearchTerm.textContent = searchTerm; 
+
+    /* Grab current data from API */
+    currentTime = weatherData.current.dt;
+    currentTemp = weatherData.current.temp;
+    currentFeelsLike = weatherData.current.feels_like;
+    currentPressure = weatherData.current.pressure;
+    currentHumidity = weatherData.current.humidity;
+    currentUVIndex = weatherData.current.uvi;
+    currentClouds = weatherData.current.clouds;
+    currentWindSpeed = weatherData.current.wind_speed;
+    currentWindDegrees = weatherData.current.wind_deg;
+    currentWeatherIcon = weatherData.current.weather[0].icon;
+    currentWeatherIconURL = "https://openweathermap.org/img/wn/" + currentWeatherIcon + "@4x.png";
 
     // loop over weatherData
-    for (var i = 0; i < size + 1; i++) {
-        // format city name
-        let cityNameFullMax = weatherData.daily[i].temp.max;
-        let cityNameMax = Math.trunc(cityNameFullMax);
+    for (let i = 0; i < size + 1; i++) {
+        /* Grab all daily data and store in arrays */
+        dailyTime[i] = weatherData.daily[i].dt;
+        convertUTC(dailyTime[i], i);
         
-        let cityNameFullMin = weatherData.daily[i].temp.min;
-        let cityNameMin = Math.trunc(cityNameFullMin);
+        dailyTempDay[i] = weatherData.daily[i].temp.day;
+        
+        let dailyTempMaxBF = weatherData.daily[i].temp.max;
+        dailyTempMax[i] = Math.trunc(dailyTempMaxBF);
+        
+        let dailyTempMinBF = weatherData.daily[i].temp.min;
+        dailyTempMin[i] = Math.trunc(dailyTempMinBF);
 
-        let cityDateUTC = weatherData.daily[i].dt;
-        convertUTC(cityDateUTC);
-    
-        // create a container for each day of the week
-        var cityEl = document.createElement("a");
-        cityEl.classList = "list-item flex-row justify-space-between align-center";
-        cityEl.setAttribute("href", "./daily.html?city=" + cityName);
-    
-        // create a span element to hold city name
-        var titleEl = document.createElement("span");
-        titleEl.textContent = cityNameMax + "/" + cityNameMin;
-    
-        // append to container
-        cityEl.appendChild(titleEl);
-    
-        // append container to the dom
-        weatherContainerEl.appendChild(cityEl);
-    }
+        dailySunrise[i] = weatherData.daily[i].sunrise;
+        dailySunset[i] = weatherData.daily[i].sunset;
+        dailyMoonRise[i] = weatherData.daily[i].moonrise;
+        dailyMoonSet[i] = weatherData.daily[i].moonset;
+        dailyMoonPhase[i] = weatherData.daily[i].moon_phase;
+        dailyHumidity[i] = weatherData.daily[i].humidity;
+        dailyWindSpeed[i] = weatherData.daily[i].wind_speed;
+        dailyWindDegrees[i] = weatherData.daily[i].wind_deg;
+        dailyWeatherIcon[i] = weatherData.daily[i].weather[0].icon;
+        let dailyWeatherIconURL = "https://openweathermap.org/img/wn/" + dailyWeatherIcon[i] + "@4x.png";
+        dailyClouds[i] = weatherData.daily[i].clouds;
+        dailyPOP[i] = weatherData.daily[i].pop;
+        dailyUVI[i] = weatherData.daily[i].uvi;
+
+        /* Now update the UI */
+        displayWeather(i);
+    };
+};
+
+var displayWeather = function(z) {
+    /* Display results */
+    // create a container for each day of the week
+    var cityEl = document.createElement("a");
+    cityEl.classList = "list-item flex-row justify-space-between align-center";
+    cityEl.setAttribute("href", "./daily.html?city=" + cityName);
+
+    // create a span element to hold city name
+    var titleEl = document.createElement("span");
+    titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
+
+    // append to container
+    cityEl.appendChild(titleEl);
+
+    // append container to the dom
+    weatherContainerEl.appendChild(cityEl);
 };
 
 function getCurrentTime() {
@@ -73,78 +177,26 @@ function getCurrentTime() {
     // console.log("current time = " + currentTimeAWH);
 };
 
-function convertUTC(newCityDate) {
-    console.log("current time = " + newCityDate);
+function convertUTC(utcSeconds, counter) {
+    console.log("date = " + counter + " " + utcSeconds);
 
-    var utcSeconds = newCityDate;
-    var d = new Date(0);
-    d.setUTCSeconds(utcSeconds);
-    console.log("converted time = " + d);
+    /* Convert utcSeconds to a Date */
+    var dtDate = new Date(0);
+    dtDate.setUTCSeconds(utcSeconds);
+    console.log("converted time = " + dtDate);
+
+    /* Convert Date to a string */
+    var dtDateString = String(dtDate);
+
+    /* Parse the day of the week, month, day, year */
+    // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
+    var splitDateArray = dtDateString.split(" ");
+    
+    // var text = "How are you doing today?";
+    // var myArray = text.split(" ");
+    console.log(splitDateArray);
+
     return;
-
-    // First look at the number of years...
-    var getCurrentYear = Math.trunc(newCityDate/oneYear);
-    // Now, get the current year
-    var thisYear = getCurrentYear + 1970;
-    console.log("current year = " + thisYear);
-    // Next, get the number of days
-    var getCurrentDays = Math.trunc((newCityDate - (getCurrentYear * oneYear))/oneDay);
-    console.log("day of the month = " + getCurrentDays);
-    // Next, is the current year a leap year
-    if (thisYear == 2020 | thisYear == 2024) {
-        var leapYear = 1;
-    } else {
-        var leapYear = 0;
-    }
-    console.log("Leap year? 1 for Yes; 0 for No. " + leapYear);
-    // Now, I need to find out what month and day it is
-    if (getCurrentDays <= 31) {
-        // Month is January
-        var getMonth = "January";
-        var daysAtMonthStart = 0;
-    } else if ((getCurrentDays > 31) && (getCurrentDays < 59)) {
-        // Month is February
-        var getMonth = "February";
-        var daysAtMonthStart = 31;
-    } else if ((getCurrentDays >= 59) && (getCurrentDays < 90)) {
-        // Month is March
-        var getMonth = "March";
-        var daysAtMonthStart = 59;
-    } else if ((getCurrentDays >= 90) && (getCurrentDays <= 120)) {
-        // Month is April
-        var getMonth = "April";
-        var daysAtMonthStart = 90;
-    } else if ((getCurrentDays > 120) && (getCurrentDays <= 151)) {
-        // Month is May
-        var getMonth = "May";
-        var daysAtMonthStart = 120;
-    } else if ((getCurrentDays > 151) && (getCurrentDays <= 181)) {
-        // Month is June
-        var getMonth = "June";
-        var daysAtMonthStart = 151;
-    } else if ((getCurrentDays > 181) && (getCurrentDays <= 212)) {
-        // Month is July
-        var getMonth = "July";
-    } else if ((getCurrentDays > 212) && (getCurrentDays <= 243)) {
-        // Month is August
-        var getMonth = "August";
-    } else if ((getCurrentDays > 243) && (getCurrentDays <= 273)) {
-        // Month is September
-        var getMonth = "September";
-    } else if ((getCurrentDays > 273) && (getCurrentDays <= 304)) {
-        // Month is October
-        var getMonth = "October";
-    } else if ((getCurrentDays > 304) && (getCurrentDays <= 334)) {
-        // Month is November
-        var getMonth = "November";
-    } else if (getCurrentDays < 334) {
-        // Month is December
-        var getMonth = "December";
-    }
-    console.log ("Month is: " + getMonth);
-    // Final step, find the day of the month
-    var getDay = getCurrentDays - daysAtMonthStart;
-    console.log(getDay);
     
 };
 
@@ -165,33 +217,6 @@ var getFeaturedRepos = function(language) {
             alert('Error: City was not found.');
         }
     });
-};
-
-// Get All the weatherData By location
-var getCityWeather = function(location) {
-    console.log("the location is: " + location);
-
-    // format the github api url
-    var apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=37.77&lon=-122.42&appid=95b40b7251d7c4d04d5bc72b6c0d970e&units=imperial&exclude=hourly,minutely";
-     
-    // make a request to the url
-    fetch(apiUrl)
-        .then(function(response) {
-            // request was successful
-            if (response.ok) {
-                
-                response.json().then(function(data) {
-                    console.log(data);
-                    displayWeather(data, location);
-                });
-            } else {
-                alert("Error: City could not be found.");
-            };
-        })
-        .catch(function(error) {
-            // Notice this `.catch()` getting chained onto the end of the `.then()` method
-            alert("Unable to connect to GitHub");
-        });
 };
 
 var buttonClickHandler = function(event) {
