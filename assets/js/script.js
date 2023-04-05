@@ -5,6 +5,8 @@
 // localStorage.clear();
 
 /* Define global vars */
+let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
+let count = 0;
 let currentTime; 
 let currentTemp; 
 let currentFeelsLike;
@@ -32,7 +34,11 @@ const dailyWindDegrees = [];
 const dailyWeatherIcon = [];
 const dailyClouds = [];
 const dailyPOP = [];
-const dailyUVI = []; 
+const dailyUVI = [];
+const displayCity = [];
+const displayState = [];
+const displayLat = [];
+const displayLon = []; 
 
 let cityFormEl = document.querySelector("#city-form");
 let nameInputEl = document.querySelector("#cityName");
@@ -46,26 +52,94 @@ var formSubmitHandler = function(event) {
     var cityName = nameInputEl.value.trim();
 
     if (cityName) {
-        getCityWeather(cityName);
+        lookUpCity(cityName);
         nameInputEl.value = "";
     } else {
-        alert("Please enter a city.");
+        alert("Please enter a US city name.");
     }
 };
 
-// Get All the weatherData By location
-var getCityWeather = function(location) {
-    console.log("the location is: " + location);
+var lookUpCity = function(location) {
+    
+    // Format the API URL
+    var cityAPIValue = location+",,US";
+    var geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
+    console.log(geoAPIUrl);
 
-    // format the github api url
-    var apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=37.77&lon=-122.42&appid=95b40b7251d7c4d04d5bc72b6c0d970e&units=imperial&exclude=hourly,minutely";
+    fetch(geoAPIUrl)
+        .then(function(response) {
+            // request was successful
+            if (response.ok) {
+                response.json().then(function(geoData) {
+                    // Identify the length of geoData array
+                    console.log(geoData);
+                    if (geoData.length > 1) {
+                        selectWhichCity(geoData);
+                    } else {
+                        var locationName = geoData[0].name;
+                        var latValue = geoData[0].lat;
+                        var lonValue = geoData[0].lon;
+                        getCityWeather(locationName, latValue, lonValue);
+                    }
+                });
+            } else  {
+                alert("Error: City could not be found.");
+            };
+        })
+        .catch(function(error) {
+            alert("Error: Hit the catch. City cound not be found.");
+        });
+};
+
+// Ask the user which city they want to get weather for
+var selectWhichCity = function(location) {
+    console.log(location);
+    var sizeArray = location.length;
+    console.log(sizeArray);
+
+    // Clear old content just in case
+    weatherContainerEl.textContent = "";
+
+    for (let t = 0; t < sizeArray; t++) {
+        // Display the list of Cities
+        displayCity[t] = location[t].name;
+        displayState[t] = location[t].state;
+        displayLat[t] = location[t].lat;
+        displayLon[t] = location[t].lon;
+
+        /* Display results */
+        // create a container for each day of the week
+        var cityEl = document.createElement("a");
+        cityEl.classList = "list-item flex-row justify-space-between align-center";
+        cityEl.setAttribute("href", "#");
+        cityEl.onclick = function() { getCityWeather(displayCity[t], displayLat[t], displayLon[t]); };
+
+        // create a span element to hold city name
+        var titleEl = document.createElement("span");
+        titleEl.textContent = displayCity[t] + ", " + displayState[t];
+
+        // append to container
+        cityEl.appendChild(titleEl);
+
+        // append container to the dom
+        weatherContainerEl.appendChild(cityEl);
+    };
+
+    
+    
+}
+
+// Get All the weatherData By location
+var getCityWeather = function(location, latValue, lonValue) {
+
+    // format the WeatherData API URL
+    var apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat="+latValue+"&lon="+lonValue+"&appid="+apiKey+"&units=imperial&exclude=hourly,minutely";
      
     // make a request to the url
     fetch(apiUrl)
         .then(function(response) {
             // request was successful
             if (response.ok) {
-                
                 response.json().then(function(data) {
                     pullWeather(data, location);
                     saveToStorage(location);
@@ -80,20 +154,27 @@ var getCityWeather = function(location) {
         });
 };
 
-var saveToStorage = function(queryLocation, count) {
-    if (localStorage.getItem("Location") === null) {
-        // LocalStorage is empty
-        var obj = {
-            count: queryLocation 
+var saveToStorage = function(queryLocation) {
+    // Check if LocalStorage is empty
+    if (localStorage.getItem("searchObject") === null) {
+        // Create a new object
+        var searchObject = {
+            searchLocation0: queryLocation
         }
-        var val = localStorage.setItem("Location", obj);
+    
+        // Add the object in LocalStorage
+        localStorage.setItem("searchObject", JSON.stringify(searchObject));
     } else {
         // LocalStorage is not empty
-        var val = localStorage.getItem("Location");
-        console.log(val);
-        // localStorage.setItem("Location", queryLocation);
+        // Grab all the info in the object
+        var existing = localStorage.getItem("searchObject");
+        existing = existing ? JSON.parse(existing) : {};
+        existing['searchLocation'+count] = queryLocation;
 
+        // Update the request
+        localStorage.setItem('searchObject', JSON.stringify(existing));
     };
+    count++;
 }
 
 var pullWeather = function(weatherData, searchTerm) {
@@ -114,6 +195,7 @@ var pullWeather = function(weatherData, searchTerm) {
     currentPressure = weatherData.current.pressure;
     currentHumidity = weatherData.current.humidity;
     currentUVIndex = weatherData.current.uvi;
+    getUVIndexVale(currentUVIndex, "currentUVIndex");
     currentClouds = weatherData.current.clouds;
     currentWindSpeed = weatherData.current.wind_speed;
     currentWindDegrees = weatherData.current.wind_deg;
@@ -147,6 +229,8 @@ var pullWeather = function(weatherData, searchTerm) {
         dailyClouds[i] = weatherData.daily[i].clouds;
         dailyPOP[i] = weatherData.daily[i].pop;
         dailyUVI[i] = weatherData.daily[i].uvi;
+        // Determine the UVIndex value
+        getUVIndexVale(dailyUVI[i], "dailyUVI[" + i + "]");
 
         /* Now update the UI */
         displayWeather(i);
@@ -169,6 +253,20 @@ var displayWeather = function(z) {
 
     // append container to the dom
     weatherContainerEl.appendChild(cityEl);
+};
+
+function getUVIndexVale(valueUVI, whatUVIVarName) {
+    if (valueUVI <= 2) {
+        // value is favorable
+
+    } else if ((valueUVI > 2) && (valueUVI <= 7)) {
+        // value is moderate
+
+    } else {
+        // value is severe
+
+    }
+    return;
 };
 
 function getCurrentTime() {
