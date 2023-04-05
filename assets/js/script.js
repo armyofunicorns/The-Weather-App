@@ -64,7 +64,7 @@ var lookUpCity = function(location) {
     // Format the API URL
     var cityAPIValue = location+",,US";
     var geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
-    console.log(geoAPIUrl);
+    //console.log(geoAPIUrl);
 
     fetch(geoAPIUrl)
         .then(function(response) {
@@ -72,14 +72,16 @@ var lookUpCity = function(location) {
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
-                    console.log(geoData);
+                    //console.log(geoData);
                     if (geoData.length > 1) {
                         selectWhichCity(geoData);
+                        saveToStorage(location);
                     } else {
                         var locationName = geoData[0].name;
                         var latValue = geoData[0].lat;
                         var lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
+                        saveToStorage(location);
                     }
                 });
             } else  {
@@ -93,9 +95,9 @@ var lookUpCity = function(location) {
 
 // Ask the user which city they want to get weather for
 var selectWhichCity = function(location) {
-    console.log(location);
+    //console.log(location);
     var sizeArray = location.length;
-    console.log(sizeArray);
+    //console.log(sizeArray);
 
     // Clear old content just in case
     weatherContainerEl.textContent = "";
@@ -142,7 +144,6 @@ var getCityWeather = function(location, latValue, lonValue) {
             if (response.ok) {
                 response.json().then(function(data) {
                     pullWeather(data, location);
-                    saveToStorage(location);
                 });
             } else {
                 alert("Error: City could not be found.");
@@ -276,12 +277,12 @@ function getCurrentTime() {
 };
 
 function convertUTC(utcSeconds, counter) {
-    console.log("date = " + counter + " " + utcSeconds);
+    //console.log("date = " + counter + " " + utcSeconds);
 
     /* Convert utcSeconds to a Date */
     var dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
-    console.log("converted time = " + dtDate);
+    //console.log("converted time = " + dtDate);
 
     /* Convert Date to a string */
     var dtDateString = String(dtDate);
@@ -292,7 +293,7 @@ function convertUTC(utcSeconds, counter) {
     
     // var text = "How are you doing today?";
     // var myArray = text.split(" ");
-    console.log(splitDateArray);
+    //console.log(splitDateArray);
 
     return;
     
@@ -303,8 +304,8 @@ var getFeaturedRepos = function(language) {
     // Construct the API URL var
     var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
     
-    console.log(apiUrl);
-    console.log(language);
+    //console.log(apiUrl);
+    //console.log(language);
     
     fetch(apiUrl).then(function(response) {
         if(response.ok) {
@@ -319,7 +320,7 @@ var getFeaturedRepos = function(language) {
 
 var buttonClickHandler = function(event) {
     var language = event.target.getAttribute("data-language");
-    console.log("current language = " + language);
+    //console.log("current language = " + language);
     if (language) {
         getFeaturedRepos(language);
       
