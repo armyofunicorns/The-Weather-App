@@ -2,41 +2,77 @@
 By Anthony Hall */
 
 :root {
-    --primary: #ccdad1;
-    --secondary: #9caea9;
-    --tertiary: #788585;
-    --light-dark: #6f6866;
-    --dark: #38302e;
-    --border-radius: .3rem;
-    --white-color: #ffffff;
-  }
+  --day1: #FF9D00;
+  --day2: #00D5FF;
+  --day3: #14C978;
+  --day4: #9DDEF2;
+  --night1: #005496;
+  --night2: #96005A;
+  --night3: #664394;
+  --night4: #8D82B6;
+  --white-color: #ffffff;
+  --light-grey: #8D8D8D;
+  --border-radius: .4rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
   
-  * {
-    box-sizing: border-box;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Urbanist", sans-serif;
+  color: var(--white-color);
+  line-height: 1.5;
+  font-size: 1em;
+}
   
-  body {
-    background-color: var(--white-color);
-    margin: 0;
-    padding: 0;
-    font-family: "Roboto", sans-serif;
-    color: var(--dark);
-    line-height: 1.5;
-    font-size: 16px;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  margin: 0;
+  color: var(--white-color);
+}
   
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-weight: 700;
-    margin: 0;
-    color: var(--dark);
-    line-height: 1.25;
-  }
-  
+.chooseBackgroundDay1 {
+  background-image: linear-gradient(#FFC543, #FF8C00);
+}
+
+.chooseBackgroundDay2 {
+  background-image: linear-gradient(#00D5FF, #00A7C9);
+}
+
+.chooseBackgroundDay3 {
+  background-image: linear-gradient(#14C978, #009E91);
+}
+
+.chooseBackgroundDay4 {
+  background-image: linear-gradient(#9DDEF2, #4D9ECC);
+}
+
+.chooseBackgroundNight1 {
+  background-image: linear-gradient(#005496, #003359);
+}
+
+.chooseBackgroundNight2 {
+  background-image: linear-gradient(#96005A, #590000);
+}
+
+.chooseBackgroundNight3 {
+  background-image: linear-gradient(#664394, #3A2457);
+}
+
+.chooseBackgroundNight4 {
+  background-image: linear-gradient(#8D82B6, #605880);
+}
+
   main {
     margin: 20px auto;
     width: 94%;
@@ -107,13 +143,13 @@ By Anthony Hall */
   }
   
   .app-title {
-    font-size: 3rem;
+    font-size: 2rem;
     background-color: var(--primary);
-    color: var(--dark);
+    color: var(--white-color);
     padding: 0 10px;
     display: inline-block;
     border-radius: var(--border-radius);
-    box-shadow: 6px 5px var(--light-dark);
+    /* box-shadow: 6px 5px var(--light-dark); */
   }
   
   .list-group {
@@ -186,6 +222,15 @@ By Anthony Hall */
     font-size: 1.2rem;
     border: 2px solid var(--light-dark);
     border-radius: var(--border-radius);
+    font-family: "Urbanist", sans-serif;
+  }
+
+  input:focus::placeholder {
+    color: transparent;
+  }
+
+  #submitBtn {
+    display: none;
   }
   
   /* HEIGHT / WIDTH UTILS */

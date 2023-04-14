@@ -1,8 +1,30 @@
 /* Created by Anthony Hall */
-/* Updated on April 2, 2023 */
+/* Updated on April 13, 2023 */
 
-/* Clear local storage */
-// localStorage.clear();
+// Establish day or night
+let currentTimeofDay = new Date();
+let currentTimeInTheDay = currentTimeofDay.getHours();
+
+if (currentTimeInTheDay >= 19) {
+    var nightOrDay = "Night";
+} else if (currentTimeInTheDay < 6) {
+    var nightOrDay = "Night";
+} else {
+    var nightOrDay = "Day";
+}
+
+// Establish a random number between 1 and 4
+min = Math.ceil(1);
+max = Math.floor(5);
+let randomNumber = Math.floor(Math.random() * (max - min) + min);
+
+function changeColor(randomNumber,nightOrDay) {
+    // Identify what we will be updating
+    const backGradient = document.getElementById("anotherNamePerhaps");
+
+    var correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
+    backGradient.className = correctClass;
+};
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
@@ -331,4 +353,5 @@ var buttonClickHandler = function(event) {
 
 
 cityFormEl.addEventListener("submit", formSubmitHandler);
-languageButtonsEl.addEventListener("click", buttonClickHandler);
+// languageButtonsEl.addEventListener("click", buttonClickHandler);
+changeColor(randomNumber,nightOrDay);
