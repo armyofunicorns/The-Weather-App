@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on April 13, 2023 */
+/* Updated on May 15, 2023 */
 
 // Establish day or night
 let currentTimeofDay = new Date();
@@ -82,15 +82,15 @@ var formSubmitHandler = function(event) {
 };
 
 var lookUpCity = function(location) {
-    
     // Format the API URL
     var cityAPIValue = location+",,US";
     var geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
-    //console.log(geoAPIUrl);
+    console.log(geoAPIUrl);
 
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
+            console.log("success");
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
@@ -122,7 +122,7 @@ var selectWhichCity = function(location) {
     //console.log(sizeArray);
 
     // Clear old content just in case
-    weatherContainerEl.textContent = "";
+    // weatherContainerEl.textContent = "";
 
     for (let t = 0; t < sizeArray; t++) {
         // Display the list of Cities
