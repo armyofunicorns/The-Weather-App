@@ -1,4 +1,4 @@
-/* Created on March 27, 2023
+/* Created on May 16, 2023
 By Anthony Hall */
 
 :root {
@@ -12,7 +12,10 @@ By Anthony Hall */
   --night4: #8D82B6;
   --white-color: #ffffff;
   --light-grey: #8D8D8D;
-  --border-radius: .4rem;
+  --button-color: #D3D3D3;
+  --button-hover-color: #B4B4B4;
+  --shadow-color: #545454;
+  --border-radius: .4em;
 }
 
 *,
@@ -83,7 +86,7 @@ p {
   font-size: 1.2rem;
 }
 
-  .btn {
+.btn {
   font-size: 1.3rem;
   text-decoration:none;
   padding: 6px 5px;
@@ -91,19 +94,19 @@ p {
   display: block;
   margin: 5px 0;
   border-radius: var(--border-radius);
-  color: var(--primary);
+  color: var(--white-color);
   border: none;
   outline: none;
-  background-color: var(--light-dark);
-  box-shadow: 3px 3px var(--dark);
+  background-color: var(--button-color);
+  box-shadow: 3px 3px var(--shadow-color);
   transform: translate(-1px, -1px);
 }
 
 .btn:hover {
-  color: var(--primary);
-  background-color: var(--tertiary);
+  color: var(--white-color);
+  background-color: var(--button-hover-color);
   transform: translate(0, 0);
-  box-shadow: 2px 2px var(--dark);
+  box-shadow: 2px 2px var(--shadow-color);
 }
 
 .btn-inline {
@@ -112,11 +115,11 @@ p {
 
 .btn-back {
   border-radius: var(--border-radius);
-  color: var(--primary);
+  color: var(--white-color);
   border: none;
   outline: none;
   background-color: var(--light-dark);
-  box-shadow: 3px 3px var(--secondary);
+  box-shadow: 3px 3px var(--shadow-color);
   transform: translate(-1px, -1px);
   display: inline-block;
   width: auto;
@@ -126,17 +129,17 @@ p {
   font-size: 1.2rem;
 }
 
-  .btn-back:hover {
-  color: var(--primary);
+.btn-back:hover {
+  color: var(--white-color);
   background-color: var(--tertiary);
   transform: translate(0, 0);
-  box-shadow: 2px 2px var(--dark);
+  box-shadow: 3px 3px var(--shadow-color);
 }
 
 .hero {
   padding: 3% 4%;
   background-color: var(--dark);
-  color: var(--primary);
+  color: var(--white-color);
 }
 
 .hero p {
@@ -145,12 +148,13 @@ p {
 
 .app-title {
   font-size: 2rem;
-  background-color: var(--primary);
   color: var(--white-color);
-  padding: 0 10px;
+  /* padding: 0 10px; */
   display: inline-block;
-  border-radius: var(--border-radius);
-  /* box-shadow: 6px 5px var(--light-dark); */
+}
+
+.subtitle {
+  display: none;
 }
 
 .list-group {
@@ -162,13 +166,13 @@ p {
   margin-bottom: 10px;
   padding: 1.5%;
   border-radius: var(--border-radius);
-  background-color: var(--light-dark);
-  color: var(--primary);
+  background-color: var(--button-color);
+  color: var(--white-color);
   text-decoration: none;
 }
 
 .list-item:hover {
-  background-color: var(--dark);
+  background-color: var(--button-hover-color);
 }
 
 .status-icon {
@@ -194,7 +198,7 @@ p {
 }
 
 .card-header {
-  color: var(--primary);
+  color: var(--white-color);
   background-color: var(--dark);
   padding: 2.5%;
   border-radius: calc(.18rem - 1px) calc(.18rem - 1px) 0 0;
@@ -314,6 +318,7 @@ input:focus::placeholder {
 
 .col-5 {
   flex: 0 0 calc(100% * 5 / 12 - 2%);
+  border: 1px solid black;
 }
 
 .col-6 {

@@ -67,6 +67,9 @@ let nameInputEl = document.querySelector("#cityName");
 let weatherContainerEl = document.querySelector("#weather-container");
 let citySearchTerm = document.querySelector("#city-search-term");
 let languageButtonsEl = document.querySelector("#language-buttons");
+let titleApp = document.querySelector(".app-title");
+let subtitle = document.querySelector(".subtitle");
+let citySearchNumber = document.querySelector("#city-search-number");
 
 var formSubmitHandler = function(event) {
     event.preventDefault();
@@ -81,23 +84,34 @@ var formSubmitHandler = function(event) {
     }
 };
 
+function toTitleCase(str) {
+    return str.toLowerCase().split(' ').map(function (word) {
+      return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+}
+
 var lookUpCity = function(location) {
     // Format the API URL
     var cityAPIValue = location+",,US";
     var geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
-    console.log(geoAPIUrl);
 
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
-            console.log("success");
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
-                    //console.log(geoData);
                     if (geoData.length > 1) {
                         selectWhichCity(geoData);
                         saveToStorage(location);
+                        // Show the title
+                        subtitle.style.display = "block";
+                        // Change the app title
+                        titleApp.textContent = "Which " + toTitleCase(location) + "?";
+                        // Change the results definition
+                        citySearchNumber.textContent = geoData.length;
+                        // Change the search term
+                        citySearchTerm.textContent = toTitleCase(location);
                     } else {
                         var locationName = geoData[0].name;
                         var latValue = geoData[0].lat;
@@ -122,7 +136,7 @@ var selectWhichCity = function(location) {
     //console.log(sizeArray);
 
     // Clear old content just in case
-    // weatherContainerEl.textContent = "";
+    weatherContainerEl.textContent = "";
 
     for (let t = 0; t < sizeArray; t++) {
         // Display the list of Cities
@@ -148,9 +162,6 @@ var selectWhichCity = function(location) {
         // append container to the dom
         weatherContainerEl.appendChild(cityEl);
     };
-
-    
-    
 }
 
 // Get All the weatherData By location
