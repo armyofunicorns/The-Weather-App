@@ -79,7 +79,7 @@ h6 {
 
 main {
   margin: 20px auto;
-  width: 94%;
+  width: 100%;
 }
 
 p {
@@ -148,13 +148,21 @@ p {
 
 .app-title {
   font-size: 2rem;
+  font-weight: 700;
   color: var(--white-color);
-  /* padding: 0 10px; */
   display: inline-block;
 }
 
 .subtitle {
   display: none;
+  padding: 0 0 .5em 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.scaled {
+  /* transform: scale(.1,1); */
+  transform-origin: right;
 }
 
 .list-group {
@@ -166,8 +174,10 @@ p {
   margin-bottom: 10px;
   padding: 1.5%;
   border-radius: var(--border-radius);
-  background-color: var(--button-color);
+  background-color: var(--light-grey);
   color: var(--white-color);
+  font-weight: 700;
+  font-size: 1.25rem;
   text-decoration: none;
 }
 
@@ -190,8 +200,58 @@ p {
   color: rgb(29, 153, 255);
 }
   
+
+/* Single view */
+#currentConditionsContainer, #currentWeatherContainer, #currentWeatherStatsContainer {
+}
+
+h1#singleLocationH1Desc {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#singleLocationTemp {
+  font-size: 20rem;
+  font-weight: 500;
+  color: var(--white-color);
+}
+
+#singleLocationIcon {
+  width: 100%;
+  height: 100%;
+}
+
+.statsTitle {
+  font-weight: 500;
+  font-size:1.25rem;
+  color: var(--white-color);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.statsValue {
+  font-weight: 700;
+  font-size:2rem;
+  color: var(--white-color);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.statsExtra {
+  font-weight: 500;
+  font-size:.8rem;
+  color: var(--white-color);
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
 /* CARDS */
 .card {
+  display: none;
   margin: 0 0 20px 0;
   border: 3px solid var(--dark);
   border-radius: var(--border-radius);
@@ -213,6 +273,7 @@ p {
 .form-input,
 .form-textarea {
   display: block;
+  color: var(--light-grey);
 }
 
 .form-label {
@@ -256,6 +317,7 @@ input:focus::placeholder {
 .flex-row {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .flex-column {
@@ -318,7 +380,6 @@ input:focus::placeholder {
 
 .col-5 {
   flex: 0 0 calc(100% * 5 / 12 - 2%);
-  border: 1px solid black;
 }
 
 .col-6 {

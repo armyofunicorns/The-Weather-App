@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./assets/css/style.css" />
   <title>Git it Done</title>
 </head>
+
 <body class="flex-column min-100-vh" id="anotherNamePerhaps">
   <main class="flex-row justify-space-between align-center">
     <div class="col-1"></div>
@@ -15,21 +16,83 @@
       <h1 class="app-title">Hello. Looking for the weather?</h1>
     </div>
     <div class="col-5">
-      <form id="city-form">
+      <form id="cityForm">
         <input placeholder="Enter a city name, then press enter..." name="cityName" id="cityName" type="text" autofocus="true" class="form-input" />
         <input type="submit" id="submitBtn" class="btn" />
       </form>
     </div>
     <div class="col-1"></div>
   </main>
-  <section class="flex-row justify-space-between align-center">
+
+  <div id="selectCityContainer" class="flex-row justify-space-between align-center">
     <div class="col-1"></div>
     <div class="col-10">
       <h2 class="subtitle"><span id="city-search-number"></span> results for "<span id="city-search-term"></span>"</h2>
       <div id="weather-container" class="list-group"></div>
     </div>
     <div class="col-1"></div>
-  </section>
+  </div>
+
+  <div id="currentConditionsContainer" class="flex-row justify-space-between">
+    <div class="col-12">
+      <h1 id="singleLocationH1Desc"></h1>
+    </div>
+  </div>
+
+  <div id="currentWeatherContainer" class="flex-row justify-space-between">
+    <div class="col-2"></div>
+    <div class="col-4">
+      <img alt="Current Weather Icon" src="/assets/images/spacer.png" id="singleLocationIcon" class="singleLocationIcon" />
+    </div>
+    <div class="col-4">  
+      <h2 id="singleLocationTemp"></h2>
+    </div>
+    <div class="col-2"></div>
+  </div>
+
+  <div id="currentWeatherStatsContainer" class="flex-row justify-space-between align-center">
+    <div class="col-2"></div>
+    <div class="col-8 flex-row justify-space-between align-center">
+      <div>
+        <p class="statsTitle">feels like</p>
+        <p class="statsValue">65°</p>
+        <p class="statsExtra">colder</p>
+      </div>
+      <div>
+        <p class="statsTitle">humidity</p>
+        <p class="statsValue">57%</p>
+        <p class="statsExtra">comfortable</p>
+      </div>
+      <div>
+        <p class="statsTitle">pressure</p>
+        <p class="statsValue">1022hPA</p>
+        <p class="statsExtra">elevated</p>
+      </div>
+      <div>
+        <p class="statsTitle">UV index</p>
+        <p class="statsValue">2.8</p>
+        <p class="statsExtra">favorable</p>
+      </div>
+      <div>
+        <p class="statsTitle">wind speed</p>
+        <p class="statsValue">8mph</p>
+        <p class="statsExtra">gentle</p>
+      </div>
+      <div>
+        <p class="statsTitle">wind direction</p>
+        <p class="statsValue">251°</p>
+        <p class="statsExtra">northeast</p>
+      </div>
+    </div>
+    <div class="col-2"></div>
+  </div>
+
+  <!-- <section class="card">
+    <h3 class="card-header text-uppercase">Search History</h3>
+    <div id="language-buttons" class="card-body">
+      <button data-language="javascript" type="submit" class="btn">JavaScript</button>         
+    </div>
+  </section> -->
   <!-- New script -->
    <script src="./assets/js/script.js"></script>
   

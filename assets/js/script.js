@@ -62,33 +62,50 @@ const displayState = [];
 const displayLat = [];
 const displayLon = []; 
 
-let cityFormEl = document.querySelector("#city-form");
-let nameInputEl = document.querySelector("#cityName");
+let cityForm = document.querySelector("#cityForm");
+let nameInput = document.querySelector("#cityName"); // actual input value
 let weatherContainerEl = document.querySelector("#weather-container");
 let citySearchTerm = document.querySelector("#city-search-term");
 let languageButtonsEl = document.querySelector("#language-buttons");
 let titleApp = document.querySelector(".app-title");
 let subtitle = document.querySelector(".subtitle");
 let citySearchNumber = document.querySelector("#city-search-number");
+let singleLocationH1Desc = document.querySelector("#singleLocationH1Desc");
+let singleLocationTemp = document.querySelector("#singleLocationTemp");
+let singleLocationIcon = document.querySelector("#singleLocationIcon");
+let selectCityContainer = document.querySelector("#selectCityContainer");
+let currentConditionsContainer = document.getElementById("currentConditionsContainer");
+let currentWeatherContainer = document.getElementById("currentWeatherContainer");
 
-var formSubmitHandler = function(event) {
+// Start here after form submit
+var formSubmitStart = function(event) {
     event.preventDefault();
+    
     // get value from input element
-    var cityName = nameInputEl.value.trim();
+    var cityName = nameInput.value.trim();
 
     if (cityName) {
         lookUpCity(cityName);
-        nameInputEl.value = "";
+        nameInput.value = "";
     } else {
         alert("Please enter a US city name.");
     }
 };
 
+// Utility function cleaning up title case of search query
 function toTitleCase(str) {
     return str.toLowerCase().split(' ').map(function (word) {
       return (word.charAt(0).toUpperCase() + word.slice(1));
     }).join(' ');
-}
+};
+
+// Utility function to change the search location input field
+function adjustWidth() {
+    var valueNumber = cityName.value;
+    var widthNumber = 56;
+    //cityName.classList.add("scaled");
+    //cityName.style.width = widthNumber + "px";
+ };
 
 var lookUpCity = function(location) {
     // Format the API URL
@@ -131,11 +148,11 @@ var lookUpCity = function(location) {
 
 // Ask the user which city they want to get weather for
 var selectWhichCity = function(location) {
-    //console.log(location);
+    // This function only fires when there are multiple locations
+    
     var sizeArray = location.length;
-    //console.log(sizeArray);
 
-    // Clear old content just in case
+    // Clear old content, just in case
     weatherContainerEl.textContent = "";
 
     for (let t = 0; t < sizeArray; t++) {
@@ -220,11 +237,21 @@ var pullWeather = function(weatherData, searchTerm) {
     }
     // Clear old content just in case
     weatherContainerEl.textContent = "";
-    citySearchTerm.textContent = searchTerm; 
+    //citySearchTerm.textContent = searchTerm; 
+
+    // First, let's update the heading...
+    titleApp.textContent = "The weather in " + searchTerm + " is...";
+
+    // Second, let's hide the subtitle (results text)
+    subtitle.style.display = "none";
+    selectCityContainer.style.display = "none";
+
+    // Third, close the search field
+    //adjustWidth();
 
     /* Grab current data from API */
     currentTime = weatherData.current.dt;
-    currentTemp = weatherData.current.temp;
+    currentTemp = Math.round(weatherData.current.temp);
     currentFeelsLike = weatherData.current.feels_like;
     currentPressure = weatherData.current.pressure;
     currentHumidity = weatherData.current.humidity;
@@ -233,8 +260,18 @@ var pullWeather = function(weatherData, searchTerm) {
     currentClouds = weatherData.current.clouds;
     currentWindSpeed = weatherData.current.wind_speed;
     currentWindDegrees = weatherData.current.wind_deg;
+    currentWeatherMain = weatherData.current.weather[0].description;
     currentWeatherIcon = weatherData.current.weather[0].icon;
-    currentWeatherIconURL = "https://openweathermap.org/img/wn/" + currentWeatherIcon + "@4x.png";
+    currentWeatherIconURL = "/assets/images/" + currentWeatherIcon + "@4x.png";
+
+    // Update the interface
+    singleLocationH1Desc.textContent = currentWeatherMain;
+    singleLocationTemp.textContent = currentTemp + '°';
+
+    // let newImage = currentWeatherIconURL;
+    let newImage = "/assets/images/03d@4x.png";
+    singleLocationIcon.src = newImage;
+    singleLocationIcon.style.display = "block";
 
     // loop over weatherData
     for (let i = 0; i < size + 1; i++) {
@@ -273,6 +310,8 @@ var pullWeather = function(weatherData, searchTerm) {
 
 var displayWeather = function(z) {
     /* Display results */
+    
+    /*
     // create a container for each day of the week
     var cityEl = document.createElement("a");
     cityEl.classList = "list-item flex-row justify-space-between align-center";
@@ -286,7 +325,7 @@ var displayWeather = function(z) {
     cityEl.appendChild(titleEl);
 
     // append container to the dom
-    weatherContainerEl.appendChild(cityEl);
+    weatherContainerEl.appendChild(cityEl); */
 };
 
 function getUVIndexVale(valueUVI, whatUVIVarName) {
@@ -363,6 +402,6 @@ var buttonClickHandler = function(event) {
 };
 
 
-cityFormEl.addEventListener("submit", formSubmitHandler);
+cityForm.addEventListener("submit", formSubmitStart);
 // languageButtonsEl.addEventListener("click", buttonClickHandler);
 changeColor(randomNumber,nightOrDay);
