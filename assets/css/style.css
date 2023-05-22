@@ -45,6 +45,7 @@ h6 {
   color: var(--white-color);
 }
   
+/* Classes for the random background colors */
 .chooseBackgroundDay1 {
   background-image: linear-gradient(#FFC543, #FF8C00);
 }
@@ -160,9 +161,13 @@ p {
   font-weight: 700;
 }
 
-.scaled {
-  /* transform: scale(.1,1); */
-  transform-origin: right;
+/* This gets added after someone submits a search request */
+.hidden {
+  display: flex;
+  width: 0%;
+  opacity: 1;
+  transition: width .5s, padding .5s;
+  transition-timing-function: ease-in-out;
 }
 
 .list-group {
@@ -203,6 +208,7 @@ p {
 
 /* Single view */
 #currentConditionsContainer, #currentWeatherContainer, #currentWeatherStatsContainer {
+  display: none;
 }
 
 h1#singleLocationH1Desc {
@@ -358,6 +364,10 @@ input:focus::placeholder {
   align-items: center;
 }
 
+.align-start {
+  align-items: start;
+}
+
 .col-auto {
   flex-grow: 1;
 }
@@ -412,6 +422,13 @@ input:focus::placeholder {
 
 /* col-sm */
 @media screen and (min-width: 640px) {
+  .app-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white-color);
+    display: none;
+  }
+
   .col-sm-1 {
     flex: 0 0 calc(100% * 1 / 12 - 2%);
   }
@@ -464,6 +481,12 @@ input:focus::placeholder {
 
 /* col-md */
 @media screen and (min-width: 768px) {
+  .app-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white-color);
+    display: inline-block;
+  }
   .col-md-1 {
     flex: 0 0 calc(100% * 1 / 12 - 2%);
   }
@@ -515,6 +538,12 @@ input:focus::placeholder {
 
 /* col-lg */
 @media screen and (min-width: 992px) {
+  .app-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white-color);
+    display: inline-block;
+  }
   .col-lg-1 {
     flex: 0 0 calc(100% * 1 / 12 - 2%);
   }
@@ -566,6 +595,13 @@ input:focus::placeholder {
 
 /* col-xl */
 @media screen and (min-width: 1200px) {
+  .app-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white-color);
+    display: inline-block;
+  }
+
   .col-xl-1 {
     flex: 0 0 calc(100% * 1 / 12 - 2%);
   }

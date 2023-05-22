@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on May 15, 2023 */
+/* Updated on May 19, 2023 */
 
 // Establish day or night
 let currentTimeofDay = new Date();
@@ -37,9 +37,12 @@ let currentHumidity;
 let currentUVIndex;
 let currentClouds;
 let currentWindSpeed;
+let currentWindSpeedWo;
 let currentWindDegrees;
+let currentWindDegreesWo;
 let currentWeatherIcon;
 let currentWeatherIconURL;
+let diffFeelsLikeBooleanValue;
 
 const dailyTime = [];
 const dailyTempDay = [];
@@ -64,7 +67,7 @@ const displayLon = [];
 
 let cityForm = document.querySelector("#cityForm");
 let nameInput = document.querySelector("#cityName"); // actual input value
-let weatherContainerEl = document.querySelector("#weather-container");
+let weatherContainer = document.querySelector("#weather-container");
 let citySearchTerm = document.querySelector("#city-search-term");
 let languageButtonsEl = document.querySelector("#language-buttons");
 let titleApp = document.querySelector(".app-title");
@@ -77,6 +80,20 @@ let selectCityContainer = document.querySelector("#selectCityContainer");
 let currentConditionsContainer = document.getElementById("currentConditionsContainer");
 let currentWeatherContainer = document.getElementById("currentWeatherContainer");
 
+let statsFeelsLike = document.querySelector("#statsFeelsLike");
+let statsHumidity = document.querySelector("#statsHumidity");
+let statsPressure = document.querySelector("#statsPressure");
+let statsUvIndex = document.querySelector("#statsUvIndex");
+let statsWindSpeed = document.querySelector("#statsWindSpeed");
+let statsWindDirection = document.querySelector("#statsWindDirection");
+
+let statsFeelsLikeSub = document.querySelector("#statsFeelsLikeSub");
+let statsHumiditySub = document.querySelector("#statsHumiditySub");
+let statsPressureSub = document.querySelector("#statsPressureSub");
+let statsUvIndexSub = document.querySelector("#statsUvIndexSub");
+let statsWindSpeedSub = document.querySelector("#statsWindSpeedSub");
+let statsWindDirectionSub = document.querySelector("#statsWindDirectionSub");
+
 // Start here after form submit
 var formSubmitStart = function(event) {
     event.preventDefault();
@@ -87,6 +104,7 @@ var formSubmitStart = function(event) {
     if (cityName) {
         lookUpCity(cityName);
         nameInput.value = "";
+        slideSearch("false");
     } else {
         alert("Please enter a US city name.");
     }
@@ -99,14 +117,18 @@ function toTitleCase(str) {
     }).join(' ');
 };
 
-// Utility function to change the search location input field
-function adjustWidth() {
-    var valueNumber = cityName.value;
-    var widthNumber = 56;
-    //cityName.classList.add("scaled");
-    //cityName.style.width = widthNumber + "px";
- };
-
+// Function to open/close the search field
+function slideSearch(actionStatus) {
+    if (actionStatus) {
+        let nameInput = document.querySelector("#cityName");
+        nameInput.classList.toggle('hidden');
+        // nameInput.classList.add("hidden");
+        // nameInput.style.width = ((nameInput.value.length + 1) * 8) + 'px';
+    } else {
+        return;
+    };
+};
+  
 var lookUpCity = function(location) {
     // Format the API URL
     var cityAPIValue = location+",,US";
@@ -153,7 +175,7 @@ var selectWhichCity = function(location) {
     var sizeArray = location.length;
 
     // Clear old content, just in case
-    weatherContainerEl.textContent = "";
+    weatherContainer.textContent = "";
 
     for (let t = 0; t < sizeArray; t++) {
         // Display the list of Cities
@@ -177,7 +199,7 @@ var selectWhichCity = function(location) {
         cityEl.appendChild(titleEl);
 
         // append container to the dom
-        weatherContainerEl.appendChild(cityEl);
+        weatherContainer.appendChild(cityEl);
     };
 }
 
@@ -232,11 +254,11 @@ var pullWeather = function(weatherData, searchTerm) {
     // Check and verify if API returned any weatherData
     var size = Object.keys(weatherData).length;
     if (size === 0) {
-        weatherContainerEl.textContent = "No city by that name found. Please try again.";
+        weatherContainer.textContent = "No city by that name found. Please try again.";
         return;
     }
     // Clear old content just in case
-    weatherContainerEl.textContent = "";
+    weatherContainer.textContent = "";
     //citySearchTerm.textContent = searchTerm; 
 
     // First, let's update the heading...
@@ -244,34 +266,79 @@ var pullWeather = function(weatherData, searchTerm) {
 
     // Second, let's hide the subtitle (results text)
     subtitle.style.display = "none";
+
     selectCityContainer.style.display = "none";
+    currentConditionsContainer.style.display = "flex";
+    currentWeatherContainer.style.display = "flex";
+    currentWeatherStatsContainer.style.display = "flex";
 
     // Third, close the search field
     //adjustWidth();
 
     /* Grab current data from API */
     currentTime = weatherData.current.dt;
-    currentTemp = Math.round(weatherData.current.temp);
-    currentFeelsLike = weatherData.current.feels_like;
-    currentPressure = weatherData.current.pressure;
-    currentHumidity = weatherData.current.humidity;
-    currentUVIndex = weatherData.current.uvi;
-    getUVIndexVale(currentUVIndex, "currentUVIndex");
+    currentTemp = Math.round(weatherData.current.temp) + "°";
+    currentFeelsLike = Math.round(weatherData.current.feels_like) + "°";
+    currentPressure = weatherData.current.pressure + "hPA";
+    currentHumidity = weatherData.current.humidity + "%";
+    currentUVIndex = Math.round(weatherData.current.uvi * 10)/10;
     currentClouds = weatherData.current.clouds;
-    currentWindSpeed = weatherData.current.wind_speed;
-    currentWindDegrees = weatherData.current.wind_deg;
+    currentWindSpeed = Math.round(weatherData.current.wind_speed) + "mph";
+    currentWindSpeedWo = Math.round(weatherData.current.wind_speed);
+    currentWindDegrees = weatherData.current.wind_deg + "°";
+    currentWindDegreesWo = weatherData.current.wind_deg;
     currentWeatherMain = weatherData.current.weather[0].description;
     currentWeatherIcon = weatherData.current.weather[0].icon;
     currentWeatherIconURL = "/assets/images/" + currentWeatherIcon + "@4x.png";
 
-    // Update the interface
+    // Update the current description text
     singleLocationH1Desc.textContent = currentWeatherMain;
-    singleLocationTemp.textContent = currentTemp + '°';
+    // Need to validate that &deg; symbol used below works everywhere
+    singleLocationTemp.textContent = currentTemp;
 
-    // let newImage = currentWeatherIconURL;
-    let newImage = "/assets/images/03d@4x.png";
+    // Update the current condition icon
+    let newImage = currentWeatherIconURL;
     singleLocationIcon.src = newImage;
     singleLocationIcon.style.display = "block";
+
+    // Update the stats data
+    statsFeelsLike.textContent = currentFeelsLike;
+    statsHumidity.textContent = currentHumidity;
+    statsPressure.textContent = currentPressure;
+    statsUvIndex.textContent = currentUVIndex;
+    statsWindSpeed.textContent = currentWindSpeed;
+    statsWindDirection.textContent = currentWindDegrees;
+
+    // Determine the sub text for feels like value
+    let diffFeelsLikeValue = Math.round(weatherData.current.temp) - Math.round(weatherData.current.feels_like);
+    let diffFeelsLikeBoolean = Math.round(weatherData.current.temp) - Math.round(weatherData.current.feels_like);
+    
+    if (diffFeelsLikeBoolean > 0) {
+        diffFeelsLikeBooleanValue = " cooler";
+    } else if (diffFeelsLikeBoolean == 0) {
+        diffFeelsLikeBooleanValue = " same";
+    } else {
+        diffFeelsLikeBooleanValue = " hotter";
+    }
+    
+    // Determine the sub text for feels like
+    getFeelsLike(diffFeelsLikeValue,diffFeelsLikeBooleanValue);
+    
+    // Determine the sub text for humidity
+    getHumidity(weatherData.current.humidity);
+    
+    // Determine the sub text for pressure value
+    getPressure(weatherData.current.pressure);
+        
+    // Determine the sub text for uv index value
+    getUVIndexVale(currentUVIndex, "currentUVIndex");
+
+    // Determine the sub text for wind speed value
+    getWindSpeed(currentWindSpeedWo);   
+
+    // Determine the sub text for wind direction value
+    // Reminder: Wind is blowing FROM, not where it is blowing towards.
+    getWindDirection(currentWindDegreesWo); 
 
     // loop over weatherData
     for (let i = 0; i < size + 1; i++) {
@@ -304,40 +371,177 @@ var pullWeather = function(weatherData, searchTerm) {
         getUVIndexVale(dailyUVI[i], "dailyUVI[" + i + "]");
 
         /* Now update the UI */
-        displayWeather(i);
+        //displayWeather(i);
     };
 };
 
-var displayWeather = function(z) {
-    /* Display results */
-    
-    /*
-    // create a container for each day of the week
-    var cityEl = document.createElement("a");
-    cityEl.classList = "list-item flex-row justify-space-between align-center";
-    cityEl.setAttribute("href", "./daily.html?city=" + cityName);
+function getFeelsLike(valueFeelsLike,valueHotCool) {
+    if (valueFeelsLike == 0) {
+        statsFeelsLikeSub.textContent = "same";
+    } else if ((valueFeelsLike < 3) && (valueFeelsLike > 0)) {
+        statsFeelsLikeSub.textContent = "similar";
+    } else if ((valueFeelsLike < 6) && (valueFeelsLike >= 3)) {
+        statsFeelsLikeSub.textContent = "slightly" + valueHotCool;
+    } else if ((valueFeelsLike < 10) && (valueFeelsLike >= 6)) {
+        statsFeelsLikeSub.textContent = "noticeably" + valueHotCool;
+    } else if ((valueFeelsLike < 15) && (valueFeelsLike >= 10)) {
+        statsFeelsLikeSub.textContent = "considerably" + valueHotCool;
+    } else if ((valueFeelsLike < 20) && (valueFeelsLike >= 15)) {
+        statsFeelsLikeSub.textContent = "much much" + valueHotCool;
+    } else if (valueFeelsLike >= 20) {
+        // greater than 20 degrees
+        statsFeelsLikeSub.textContent = "hot and" + valueHotCool;
+    } else {
+        // when there is no data
+        statsFeelsLikeSub.textContent = "no data";
+    }
+    return;
+}
 
-    // create a span element to hold city name
-    var titleEl = document.createElement("span");
-    titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
+function getHumidity(valueHumidity) {
+    if (valueHumidity == 0) {
+        statsHumiditySub.textContent = "none";
+    } else if ((valueHumidity < 30) && (valueHumidity > 0)) {
+        statsHumiditySub.textContent = "low";
+    } else if ((valueHumidity < 60) && (valueHumidity >= 30)) {
+        statsHumiditySub.textContent = "moderate";
+    } else if ((valueHumidity < 80) && (valueHumidity >= 60)) {
+        statsHumiditySub.textContent = "high";
+    } else if ((valueHumidity < 90) && (valueHumidity >= 80)) {
+        statsHumiditySub.textContent = "very high";
+    } else if (valueHumidity >= 90) {
+        statsHumiditySub.textContent = "extremely high";
+    }
+    return;
+};
 
-    // append to container
-    cityEl.appendChild(titleEl);
-
-    // append container to the dom
-    weatherContainerEl.appendChild(cityEl); */
+function getPressure(valuePressure) {
+    // Determine the sub text for pressure value
+    if (valuePressure < 1000) {
+        statsPressureSub.textContent = "low";
+    } else if ((valuePressure >= 1000) && (valuePressure < 1013)) {
+        statsPressureSub.textContent = "moderate";
+    } else if ((valuePressure >= 1013) && (valuePressure < 1020)) {
+        statsPressureSub.textContent = "high";
+    } else if ((valuePressure >= 1020) && (valuePressure < 1030)) {
+        statsPressureSub.textContent = "very high";
+    } else {
+        statsPressureSub.textContent = "extremely high";
+    }
+    return;
 };
 
 function getUVIndexVale(valueUVI, whatUVIVarName) {
-    if (valueUVI <= 2) {
-        // value is favorable
+    if (whatUVIVarName == "currentUVIndex") {
+        if (valueUVI == 0) {
+            // value is favorable
+            statsUvIndexSub.textContent = "no worries";
+        } else if (valueUVI <= 2) {
+            // value is favorable
+            statsUvIndexSub.textContent = "favorable";
+        } else if ((valueUVI > 2) && (valueUVI <= 7)) {
+            // value is moderate
+            statsUvIndexSub.textContent = "moderate";
+        } else if (valueUVI > 7) {
+            // value is severe
+            statsUvIndexSub.textContent = "severe";
+        } else {
+            statsUvIndexSub.textContent = "no data";
+        }
+        return;
+    };
+};
 
-    } else if ((valueUVI > 2) && (valueUVI <= 7)) {
-        // value is moderate
-
+function getWindSpeed(valueSpeed) {
+    if (valueSpeed == 0) {
+        // value is none
+        statsWindSpeedSub.textContent = "none";
+    } else if ((valueSpeed > 0) && (valueSpeed <= 3)) {
+        // value is calm
+        statsWindSpeedSub.textContent = "calm";
+    } else if ((valueSpeed > 3) && (valueSpeed <= 12)) {
+        // value is light breeze
+        statsWindSpeedSub.textContent = "light";
+    } else if ((valueSpeed > 12) && (valueSpeed <= 24)) {
+        // value is moderate breeze
+        statsWindSpeedSub.textContent = "moderate";
+    } else if ((valueSpeed > 24) && (valueSpeed <= 38)) {
+        // value is fresh breeze
+        statsWindSpeedSub.textContent = "fresh";
+    } else if ((valueSpeed > 38) && (valueSpeed <= 55)) {
+        // value is Strong breeze
+        statsWindSpeedSub.textContent = "strong";
+    } else if ((valueSpeed > 55) && (valueSpeed <= 73)) {
+        // value is Gale-force breeze
+        statsWindSpeedSub.textContent = "gale-force";
+    } else if ((valueSpeed > 73) && (valueSpeed <= 95)) {
+        // value is Storm-force breeze
+        statsWindSpeedSub.textContent = "storm-force";
+    } else if (valueSpeed > 95) {
+        // value is Hurricane-force breeze
+        statsWindSpeedSub.textContent = "hurricane-force";
     } else {
-        // value is severe
+        // value is no value
+        statsWindSpeedSub.textContent = "no data";
+    }
+    return;
+};
 
+function getWindDirection(valueDirection) {
+    if ((valueDirection >= 0) && (valueDirection < 11.25)) {
+        // value is north
+        statsWindDirectionSub.textContent = "north";
+    } else if ((valueDirection >= 11.25) && (valueDirection < 33.75)) {
+        // value is north-northeast
+        statsWindDirectionSub.textContent = "north-northeast";
+    } else if ((valueDirection >= 33.75) && (valueDirection < 56.25)) {
+        // value is northeast
+        statsWindDirectionSub.textContent = "northeast";
+    } else if ((valueDirection >= 56.25) && (valueDirection < 78.75)) {
+        // value is east-northeast
+        statsWindDirectionSub.textContent = "east-northeast";
+    } else if ((valueDirection >= 78.75) && (valueDirection < 101.25)) {
+        // value is east
+        statsWindDirectionSub.textContent = "east";
+    } else if ((valueDirection >= 101.25) && (valueDirection < 123.75)) {
+        // value is east-southeast
+        statsWindDirectionSub.textContent = "east-southeast";
+    } else if ((valueDirection >= 123.75) && (valueDirection < 146.25)) {
+        // value is southeast
+        statsWindDirectionSub.textContent = "southeast";
+    } else if ((valueDirection >= 146.25) && (valueDirection < 168.75)) {
+        // value is south-southeast
+        statsWindDirectionSub.textContent = "south-southeast";
+    } else if ((valueDirection >= 168.75) && (valueDirection < 191.25)) {
+        // value is south
+        statsWindDirectionSub.textContent = "south";
+    } else if ((valueDirection >= 191.25) && (valueDirection < 213.75)) {
+        // value is south-southwest
+        statsWindDirectionSub.textContent = "south-southwest";
+    } else if ((valueDirection >= 213.75) && (valueDirection < 236.25)) {
+        // value is southwest
+        statsWindDirectionSub.textContent = "southwest";
+    } else if ((valueDirection >= 236.25) && (valueDirection < 258.75)) {
+        // value is west-southwest
+        statsWindDirectionSub.textContent = "west-southwest";
+    } else if ((valueDirection >= 258.75) && (valueDirection < 281.25)) {
+        // value is west
+        statsWindDirectionSub.textContent = "west";
+    } else if ((valueDirection >= 281.25) && (valueDirection < 303.75)) {
+        // value is west-northwest
+        statsWindDirectionSub.textContent = "west-northwest";
+    } else if ((valueDirection >= 303.75) && (valueDirection < 326.25)) {
+        // value is northwest
+        statsWindDirectionSub.textContent = "northwest";
+    } else if ((valueDirection >= 326.25) && (valueDirection < 348.75)) {
+        // value is north-northwest
+        statsWindDirectionSub.textContent = "north-northwest";
+    } else if ((valueDirection >= 348.75) && (valueDirection <= 360)) {
+        // value is north
+        statsWindDirectionSub.textContent = "north";
+    } else {
+        // value is no value
+        statsWindSpeedSub.textContent = "no data";
     }
     return;
 };
@@ -370,6 +574,31 @@ function convertUTC(utcSeconds, counter) {
     return;
     
 };
+
+
+var displayWeather = function(z) {
+    /* Display results */
+    
+    /*
+    // create a container for each day of the week
+    var cityEl = document.createElement("a");
+    cityEl.classList = "list-item flex-row justify-space-between align-center";
+    cityEl.setAttribute("href", "./daily.html?city=" + cityName);
+
+    // create a span element to hold city name
+    var titleEl = document.createElement("span");
+    titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
+
+    // append to container
+    cityEl.appendChild(titleEl);
+
+    // append container to the dom
+    weatherContainer.appendChild(cityEl); */
+};
+
+
+
+
 
 // Get repos by language
 var getFeaturedRepos = function(language) {
