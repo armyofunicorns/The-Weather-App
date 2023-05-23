@@ -13,7 +13,7 @@ if (currentTimeInTheDay >= 19) {
     var nightOrDay = "Day";
 }
 
-// Establish a random number between 1 and 4
+// Establish a random number between 1 and 4, used to determine which background to display
 min = Math.ceil(1);
 max = Math.floor(5);
 let randomNumber = Math.floor(Math.random() * (max - min) + min);
@@ -25,6 +25,10 @@ function changeColor(randomNumber,nightOrDay) {
     var correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
     backGradient.className = correctClass;
 };
+
+// Capture screen dimensions
+let browserWidth = window.innerWidth;
+let browserHeight = window.innerHeight;
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
@@ -268,7 +272,7 @@ var pullWeather = function(weatherData, searchTerm) {
     subtitle.style.display = "none";
 
     selectCityContainer.style.display = "none";
-    currentConditionsContainer.style.display = "flex";
+    currentConditionsContainer.style.display = "inline-block";
     currentWeatherContainer.style.display = "flex";
     currentWeatherStatsContainer.style.display = "flex";
 
@@ -630,7 +634,28 @@ var buttonClickHandler = function(event) {
       }
 };
 
+window.addEventListener('load', function() {
+    flexSection = document.querySelector("#flexSection");
+    flexTitle = document.querySelector("#flexTitle");
+    flexForm = document.querySelector("#flexForm");
+
+    if (browserWidth < 1024) {
+        // modify the header section for mobile devices
+        flexTitle.style.display = "none";
+        flexForm.classList.remove("col-5");
+        flexForm.classList.add("col-10");
+    };
+});
+
+window.addEventListener('resize', function(event){
+    browserWidth = window.innerWidth;
+    browserHeight = window.innerHeight;
+    //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
+});
 
 cityForm.addEventListener("submit", formSubmitStart);
+
 // languageButtonsEl.addEventListener("click", buttonClickHandler);
+
+// Call this function after all has loaded
 changeColor(randomNumber,nightOrDay);

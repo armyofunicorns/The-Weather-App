@@ -10,31 +10,27 @@
 </head>
 
 <body class="flex-column min-100-vh" id="anotherNamePerhaps">
-  <main class="flex-row justify-space-between align-center">
-    <div class="col-1"></div>
+  <section id="flexSection" class="flex-row justify-space-around align-center">
     <div id="flexTitle" class="col-5">
       <h1 class="app-title">Hello. Looking for the weather?</h1>
     </div>
-    <div id="flexSearch" class="col-5">
+    <div id="flexForm" class="col-5">
       <form id="cityForm">
         <input placeholder="Enter a city name, then press enter..." name="cityName" id="cityName" type="text" autofocus="true" class="form-input" />
         <input type="submit" id="submitBtn" class="btn" />
       </form>
     </div>
-    <div class="col-1"></div>
-  </main>
+  </section>
 
-  <div id="selectCityContainer" class="flex-row justify-space-between align-center">
-    <div class="col-1"></div>
+  <div id="selectCityContainer" class="flex-row justify-space-around align-center">
     <div class="col-10">
       <h2 class="subtitle"><span id="city-search-number"></span> results for "<span id="city-search-term"></span>"</h2>
       <div id="weather-container" class="list-group"></div>
     </div>
-    <div class="col-1"></div>
   </div>
 
-  <div id="currentConditionsContainer" class="flex-row justify-space-between">
-    <div class="col-12">
+  <div id="currentConditionsContainer" class="flex-row justify-space-around align-center">
+    <div class="col-10">
       <h1 id="singleLocationH1Desc"></h1>
     </div>
   </div>
