@@ -276,9 +276,6 @@ var pullWeather = function(weatherData, searchTerm) {
     currentWeatherContainer.style.display = "flex";
     currentWeatherStatsContainer.style.display = "flex";
 
-    // Third, close the search field
-    //adjustWidth();
-
     /* Grab current data from API */
     currentTime = weatherData.current.dt;
     currentTemp = Math.round(weatherData.current.temp) + "°";
@@ -574,9 +571,7 @@ function convertUTC(utcSeconds, counter) {
     // var text = "How are you doing today?";
     // var myArray = text.split(" ");
     //console.log(splitDateArray);
-
     return;
-    
 };
 
 
