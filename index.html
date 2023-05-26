@@ -1,46 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700&display=swap" rel="stylesheet">
+  
+  <!-- Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css?family=Urbanist:400,500,600,700&display=swap" rel="stylesheet">
+ 
+  <!-- Style sheet -->
   <link rel="stylesheet" href="./assets/css/style.css" />
   <title>Git it Done</title>
 </head>
-<body class="flex-column min-100-vh">
-    <header class="hero">
-      <h1 class="app-title"><i class="fab fa-github"></i> Weather Dashboard</h1>
-    </header>
-  
-    <main class="flex-row justify-space-between">
-      <div class="col-12 col-md-4">
-        <div class="card">
-          <h3 class="card-header text-uppercase">Search By City</h3>
-          <form id="city-form" class="card-body">
-            <label class="form-label" for="cityName">City name</label>
-            <input name="cityName" id="cityName" type="text" autofocus="true" class="form-input" />
-            <button type="submit" class="btn">Search</button>
-          </form>
-        </div>
-        <div class="card">
-          <h3 class="card-header text-uppercase">Search History</h3>
-          <div id="language-buttons" class="card-body">
-            <button data-language="javascript" type="submit" class="btn">JavaScript</button>          </div>
-        </div>
+<body class="flex-column min-100-vh" id="anotherNamePerhaps">
+  <div id="headerMenu" class="headerMenu">
+
+  </div>
+  <!-- City name search form - Built like a modal -->
+  <div id="promptModal" class="promptModal">
+    <div class="promptModalContent">
+      <h1>Hello. Looking for the weather?</h1>
+      <form id="cityForm">
+        <input placeholder="Please, enter a city name..." name="cityName" id="cityName" type="text" autofocus="false" class="form-input" />
+        <input type="submit" value="Search for city" id="submitBtn" class="btn" />
+      </form>
+    </div>
+  </div>
+  <!-- When there are more than one possible location, use this -->
+  <div id="selectCityContainer" class="flex-row justify-space-around align-center">
+    <div class="col-10">
+      <h1 class="appTitle"></h1>
+      <h2 class="subtitle"><span id="city-search-number"></span> results for "<span id="city-search-term"></span>"</h2>
+      <div id="weather-container" class="list-group"></div>
+    </div>
+  </div>
+
+  <!-- After selecting city, this displays the current condition description -->
+  <div id="currentConditionsContainer" class="flex-row justify-space-around align-center">
+    <div class="col-10">
+      <h1 id="singleLocationDesc"></h1>
+    </div>
+  </div>
+
+  <div id="currentWeatherContainer" class="flex-row justify-center align-center">
+    <div class="col-4">
+      <img alt="Current Weather Icon" src="/assets/images/spacer.png" id="singleLocationIcon" class="singleLocationIcon" />
+    </div>
+    <div class="col-4">  
+      <h2 id="singleLocationTemp"></h2>
+    </div>
+  </div>
+
+  <div id="currentWeatherStatsContainer" class="flex-row justify-center align-center">
+    <div class="col-8 flex-row justify-space-between align-start">
+      <div class="padContainer">
+        <p class="statsTitle">feels like</p>
+        <p id="statsFeelsLike" class="statsValue"></p>
+        <p id="statsFeelsLikeSub" class="statsExtra"></p>
       </div>
-  
-      <div class="col-12 col-md-8">
-        <h2 class="subtitle">Showing Weather for: <span id="city-search-term"></span></h2>
-        <div id="weather-container" class="list-group"></div>
+      <div class="padContainer">
+        <p class="statsTitle">humidity</p>
+        <p id="statsHumidity" class="statsValue"></p>
+        <p id="statsHumiditySub" class="statsExtra"></p>
       </div>
-    </main>
-    
-   
+      <div class="padContainer">
+        <p class="statsTitle">pressure</p>
+        <p id="statsPressure" class="statsValue"></p>
+        <p id="statsPressureSub" class="statsExtra"></p>
+      </div>
+      <div class="padContainer">
+        <p class="statsTitle">uv index</p>
+        <p id="statsUvIndex" class="statsValue"></p>
+        <p id="statsUvIndexSub" class="statsExtra"></p>
+      </div>
+      <div class="padContainer">
+        <p class="statsTitle">wind speed</p>
+        <p id="statsWindSpeed" class="statsValue"></p>
+        <p id="statsWindSpeedSub" class="statsExtra"></p>
+      </div>
+      <div class="padContainer">
+        <p class="statsTitle">wind direction</p>
+        <p id="statsWindDirection" class="statsValue"></p>
+        <p id="statsWindDirectionSub" class="statsExtra"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- <section class="card">
+    <h3 class="card-header text-uppercase">Search History</h3>
+    <div id="language-buttons" class="card-body">
+      <button data-language="javascript" type="submit" class="btn">JavaScript</button>         
+    </div>
+  </section> -->
   <!-- New script -->
    <script src="./assets/js/script.js"></script>
   
   </body>
-  </html>
+</html>
