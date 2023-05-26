@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on May 19, 2023 */
+/* Updated on May 26, 2023 */
 
 // Establish day or night
 let currentTimeofDay = new Date();
@@ -71,26 +71,25 @@ const displayLon = [];
 
 let cityForm = document.querySelector("#cityForm");
 let nameInput = document.querySelector("#cityName"); // actual input value
+let promptModal = document.querySelector("#promptModal");
 let weatherContainer = document.querySelector("#weather-container");
 let citySearchTerm = document.querySelector("#city-search-term");
 let languageButtonsEl = document.querySelector("#language-buttons");
-let titleApp = document.querySelector(".app-title");
+let titleApp = document.querySelector(".appTitle");
 let subtitle = document.querySelector(".subtitle");
 let citySearchNumber = document.querySelector("#city-search-number");
-let singleLocationH1Desc = document.querySelector("#singleLocationH1Desc");
+let singleLocationDesc = document.querySelector("#singleLocationDesc");
 let singleLocationTemp = document.querySelector("#singleLocationTemp");
 let singleLocationIcon = document.querySelector("#singleLocationIcon");
 let selectCityContainer = document.querySelector("#selectCityContainer");
 let currentConditionsContainer = document.getElementById("currentConditionsContainer");
 let currentWeatherContainer = document.getElementById("currentWeatherContainer");
-
 let statsFeelsLike = document.querySelector("#statsFeelsLike");
 let statsHumidity = document.querySelector("#statsHumidity");
 let statsPressure = document.querySelector("#statsPressure");
 let statsUvIndex = document.querySelector("#statsUvIndex");
 let statsWindSpeed = document.querySelector("#statsWindSpeed");
 let statsWindDirection = document.querySelector("#statsWindDirection");
-
 let statsFeelsLikeSub = document.querySelector("#statsFeelsLikeSub");
 let statsHumiditySub = document.querySelector("#statsHumiditySub");
 let statsPressureSub = document.querySelector("#statsPressureSub");
@@ -108,7 +107,9 @@ var formSubmitStart = function(event) {
     if (cityName) {
         lookUpCity(cityName);
         nameInput.value = "";
-        slideSearch("false");
+        //slideSearch("false");
+        promptModal.style.display = "none";
+
     } else {
         alert("Please enter a US city name.");
     }
@@ -122,6 +123,8 @@ function toTitleCase(str) {
 };
 
 // Function to open/close the search field
+// Currently the code below doesn't work 
+// It is not getting invoked
 function slideSearch(actionStatus) {
     if (actionStatus) {
         let nameInput = document.querySelector("#cityName");
@@ -293,7 +296,7 @@ var pullWeather = function(weatherData, searchTerm) {
     currentWeatherIconURL = "/assets/images/" + currentWeatherIcon + "@4x.png";
 
     // Update the current description text
-    singleLocationH1Desc.textContent = currentWeatherMain;
+    singleLocationDesc.textContent = currentWeatherMain;
     // Need to validate that &deg; symbol used below works everywhere
     singleLocationTemp.textContent = currentTemp;
 
@@ -549,8 +552,8 @@ function getWindDirection(valueDirection) {
 
 function getCurrentTime() {
     /* Get the current time */
-    // let currentTimeAWH = Math.floor(new Date().getTime()/1000.0);
-    // console.log("current time = " + currentTimeAWH);
+    let currentTimeAWH = Math.floor(new Date().getTime()/1000.0);
+    console.log("current time = " + currentTimeAWH);
 };
 
 function convertUTC(utcSeconds, counter) {
@@ -630,21 +633,31 @@ var buttonClickHandler = function(event) {
 };
 
 window.addEventListener('load', function() {
-    flexSection = document.querySelector("#flexSection");
-    flexTitle = document.querySelector("#flexTitle");
-    flexForm = document.querySelector("#flexForm");
+    // Look at Local Storage for history, if none, launch modal
 
-    if (browserWidth < 1024) {
+    // Change the display view to account for smaller devices
+    if (browserWidth < 640) {
         // modify the header section for mobile devices
-        flexTitle.style.display = "none";
-        flexForm.classList.remove("col-5");
-        flexForm.classList.add("col-10");
+        currentWeatherContainer.classList.remove("flex-row");
+        currentWeatherContainer.classList.add("flex-column");
+        // flexTitle.style.display = "none";
+        // flexForm.classList.remove("col-5");
+        // flexForm.classList.add("col-10");
     };
 });
 
 window.addEventListener('resize', function(event){
     browserWidth = window.innerWidth;
     browserHeight = window.innerHeight;
+    // Change the display view to account for smaller devices
+    if (browserWidth < 640) {
+        // modify the header section for mobile devices
+        currentWeatherContainer.classList.remove("flex-row");
+        currentWeatherContainer.classList.add("flex-column");
+        // flexTitle.style.display = "none";
+        // flexForm.classList.remove("col-5");
+        // flexForm.classList.add("col-10");
+    };
     //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
 });
 

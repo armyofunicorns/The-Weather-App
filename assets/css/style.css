@@ -1,4 +1,4 @@
-/* Created on May 16, 2023
+/* Created on May 26, 2023
 By Anthony Hall */
 
 :root {
@@ -27,7 +27,7 @@ By Anthony Hall */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Urbanist', sans-serif;
   color: var(--white-color);
   line-height: 1.5;
   font-size: 1em;
@@ -78,38 +78,71 @@ h6 {
   background-image: linear-gradient(#8D82B6, #605880);
 }
 
-/* Definitions for main section */
-section {
-  margin: 20px auto;
-  width: 100%;
+/* Definitions for location modal */
+.promptModal {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
 }
 
+/* Modal content container */
+.promptModalContent {
+  display: block;
+  width: 80%;
+  height: 35%;
+  margin: 0;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 1em;
+  background-color: transparent;
+}
+
+.promptModalContent>h1 {
+  width: 100%;
+  text-align: center;
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white-color);
+  margin: 1.2em 0;
+}
+
+/* Definitions for main section */
 p {
   font-size: 1.2rem;
 }
 
 /* Button definitions */
 .btn {
-  font-size: 1.3rem;
+  font-size: 1rem;
+  font-weight: 500;
   text-decoration:none;
-  padding: 6px 5px;
   width: 100%;
   display: block;
-  margin: 5px 0;
+  margin: 2rem 0 0 0;
   border-radius: var(--border-radius);
   color: var(--white-color);
-  border: none;
+  border: 2px solid var(--white-color);
   outline: none;
-  background-color: var(--button-color);
-  box-shadow: 3px 3px var(--shadow-color);
-  transform: translate(-1px, -1px);
+  background-color: transparent;
+  /* transform: translate(-1px, -1px); */
+  opacity: .8;
+  cursor: pointer;
 }
 
 .btn:hover {
   color: var(--white-color);
-  background-color: var(--button-hover-color);
-  transform: translate(0, 0);
-  box-shadow: 2px 2px var(--shadow-color);
+  border: 2px solid var(--white-color);
+  transform: translate(0, 2px);
+  background-color: rgba(255,255,255, .3);
 }
 
 /* Change the alignment of a button */
@@ -148,13 +181,6 @@ p {
 
 .hero p {
   max-width: 75%;
-}
-
-.app-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--white-color);
-  display: inline-block;
 }
 
 .subtitle {
@@ -209,27 +235,37 @@ p {
 }
   
 
-/* Single view */
+/* Styles for the current conditions view */
 #currentConditionsContainer, #currentWeatherContainer, #currentWeatherStatsContainer {
   display: none;
 }
 
-h1#singleLocationH1Desc {
-  font-size: 3rem;
+#currentWeatherStatsContainer {
+  padding: 48px 0 0 0;
+}
+
+/* Current conditions description */
+#singleLocationDesc {
+  font-size: 2rem;
   font-weight: 700;
   text-align: center;
 }
 
+/* Current conditions temperature */
 #singleLocationTemp {
-  font-size: 20rem;
+  font-size: 8rem;
   font-weight: 500;
+  line-height: .8;
   color: var(--white-color);
+  justify-content: start;
 }
 
+/* Current conditions image icon */
 #singleLocationIcon {
   width: 100%;
   height: 100%;
 }
+
 
 .statsTitle {
   font-weight: 500;
@@ -256,6 +292,12 @@ h1#singleLocationH1Desc {
   text-align: center;
   padding: 0;
   margin: 0;
+}
+
+.padContainer {
+  width: 140px;
+  padding: 2% 2% 4% 2%;
+  margin: 1% 1% 2% 1%;
 }
 
 /* CARDS */
@@ -310,7 +352,7 @@ input:focus::placeholder {
 }
 
 #submitBtn {
-  display: none;
+  display: block;
 }
 
 /* HEIGHT / WIDTH UTILS */
@@ -393,11 +435,11 @@ input:focus::placeholder {
 }
 
 .col-4 {
-  flex: 0 0 calc(100% * 4 / 12 - 2%);
+  flex: 0 0 calc(100% * 4 / 4 - 2%);
 }
 
 .col-5 {
-  flex: 0 0 calc(100% * 5 / 12 - 2%);
+  flex: 0 0 calc(100% * 5 / 5 - 2%);
 }
 
 .col-6 {
@@ -409,7 +451,7 @@ input:focus::placeholder {
 }
 
 .col-8 {
-  flex: 0 0 calc(100% * 8 / 12 - 2%);
+  flex: 0 0 calc(100% * 8 / 10 - 2%);
 }
 
 .col-9 {
@@ -428,33 +470,74 @@ input:focus::placeholder {
   flex: 0 0 100%;
 }
 
-/* col-sm */
-@media screen and (min-width: 640px) {
-  .app-title {
+@media screen and (min-width: 480px) {
+  .promptModalContent>h1 {
     font-size: 1rem;
-    font-weight: 700;
-    color: var(--white-color);
-    display: inline-block;
+  }
+
+  .padContainer {
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  #currentWeatherStatsContainer {
+    padding: 24px 0 0 0;
   }
 }
 
+@media screen and (min-width: 640px) {
+  #singleLocationDesc {
+    font-size: 3rem;
+  }
 
-/* col-md */
+  /* Current conditions temperature */
+  #singleLocationTemp {
+    font-size: 20rem;
+  }
+
+  .promptModalContent>h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  #currentWeatherStatsContainer {
+    padding: 12px 0 0 0;
+  }
+}
+
 @media screen and (min-width: 768px) {
-  .app-title {
+  .promptModalContent {
+    width: 40%;
+  }
+  
+  .promptModalContent>h1 {
     font-size: 2rem;
-    font-weight: 700;
-    color: var(--white-color);
-    display: inline-block;
+  }
+
+  #currentWeatherStatsContainer {
+    padding: 6px 0 0 0;
+  }
+
+  .col-4 {
+    flex: 0 0 calc(100% * 4 / 12 - 2%);
+  }
+
+  .col-5 {
+    flex: 0 0 calc(100% * 5 / 12 - 2%);
+  }
+
+  .col-8 {
+    flex: 0 0 calc(100% * 8 / 12 - 2%);
   }
 }
 
-/* col-lg */
 @media screen and (min-width: 992px) {
-
+  #currentWeatherStatsContainer {
+    padding: 0;
+  }
 }
 
-/* col-xl */
 @media screen and (min-width: 1200px) {
   
 }
