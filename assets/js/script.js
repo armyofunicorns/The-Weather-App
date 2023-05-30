@@ -74,7 +74,7 @@ let nameInput = document.querySelector("#cityName"); // actual input value
 let promptModal = document.querySelector("#promptModal");
 let weatherContainer = document.querySelector("#weather-container");
 let citySearchTerm = document.querySelector("#city-search-term");
-let languageButtonsEl = document.querySelector("#language-buttons");
+let searchIcon = document.querySelector(".searchIcon");
 let titleApp = document.querySelector(".appTitle");
 let subtitle = document.querySelector(".subtitle");
 let citySearchNumber = document.querySelector("#city-search-number");
@@ -109,7 +109,7 @@ var formSubmitStart = function(event) {
         nameInput.value = "";
         //slideSearch("false");
         promptModal.style.display = "none";
-
+        searchIcon.style.display = "block";
     } else {
         alert("Please enter a US city name.");
     }
@@ -599,9 +599,6 @@ var displayWeather = function(z) {
 };
 
 
-
-
-
 // Get repos by language
 var getFeaturedRepos = function(language) {
     // Construct the API URL var
@@ -621,14 +618,14 @@ var getFeaturedRepos = function(language) {
     });
 };
 
-var buttonClickHandler = function(event) {
+var searchButtonClick = function(event) {
     var language = event.target.getAttribute("data-language");
-    //console.log("current language = " + language);
+    console.log("got here");
     if (language) {
-        getFeaturedRepos(language);
+        //getFeaturedRepos(language);
       
         // clear old content
-        weatherContainerEl.textContent = "";
+        //weatherContainer.textContent = "";
       }
 };
 
@@ -662,8 +659,7 @@ window.addEventListener('resize', function(event){
 });
 
 cityForm.addEventListener("submit", formSubmitStart);
-
-// languageButtonsEl.addEventListener("click", buttonClickHandler);
+searchIcon.addEventListener("click", searchButtonClick);
 
 // Call this function after all has loaded
 changeColor(randomNumber,nightOrDay);

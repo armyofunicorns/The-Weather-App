@@ -15,14 +15,16 @@
   <title>Git it Done</title>
 </head>
 <body class="flex-column min-100-vh" id="anotherNamePerhaps">
-  <div id="headerMenu" class="headerMenu">
-
+  
+  <div id="headerMenu" class="headerMenu flex-row justify-flex-end align-center">
+    <div class="searchIcon"></div>  
   </div>
   <!-- City name search form - Built like a modal -->
   <div id="promptModal" class="promptModal">
     <div class="promptModalContent">
       <h1>Hello. Looking for the weather?</h1>
       <form id="cityForm">
+        <i class="icon"></i>
         <input placeholder="Please, enter a city name..." name="cityName" id="cityName" type="text" autofocus="false" class="form-input" />
         <input type="submit" value="Search for city" id="submitBtn" class="btn" />
       </form>

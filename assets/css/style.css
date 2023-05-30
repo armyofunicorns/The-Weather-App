@@ -78,6 +78,46 @@ h6 {
   background-image: linear-gradient(#8D82B6, #605880);
 }
 
+/* Definitions to add icon to input field */
+.icon {
+  padding: 10px;
+  color: var(--shadow-color);
+  min-width: 50px;
+  height: 56px;
+  text-align: center;
+  position: absolute;
+  background-image: url(/assets/images/icon.svg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+/* Definitions for the header */
+.headerMenu {
+  position: static;
+  width: 100%;
+  height: 88px;
+}
+
+.searchIcon {
+  width: 56px;
+  height: 56px;
+  display: none;
+  background-color: var(--white-color);
+  border-radius: var(--border-radius);
+  background-image: url(/assets/images/icon.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 0 2% 0 0;
+  z-index: 100000;
+}
+
+.searchIcon:hover {
+  opacity: .5;
+  transform: translate(0, 2px);
+  cursor: pointer;
+}
+
 /* Definitions for location modal */
 .promptModal {
   display: block;
@@ -133,7 +173,6 @@ p {
   border: 2px solid var(--white-color);
   outline: none;
   background-color: transparent;
-  /* transform: translate(-1px, -1px); */
   opacity: .8;
   cursor: pointer;
 }
@@ -339,7 +378,7 @@ input {
 .form-input {
   width: 100%;
   height: 56px;
-  padding: 3%;
+  padding: 3% 8%;
   margin: 5px 0;
   font-size: 1.2rem;
   border: 2px solid var(--light-dark);
