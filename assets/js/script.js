@@ -22,13 +22,9 @@ function changeColor(randomNumber,nightOrDay) {
     // Identify what we will be updating
     const backGradient = document.getElementById("anotherNamePerhaps");
 
-    var correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
+    let correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
     backGradient.className = correctClass;
 };
-
-// Capture screen dimensions
-let browserWidth = window.innerWidth;
-let browserHeight = window.innerHeight;
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
@@ -72,11 +68,13 @@ const displayLon = [];
 let cityForm = document.querySelector("#cityForm");
 let nameInput = document.querySelector("#cityName"); // actual input value
 let promptModal = document.querySelector("#promptModal");
-let weatherContainer = document.querySelector("#weather-container");
+let weatherContainer = document.querySelector("#weatherContainer");
+let searchContainer = document.querySelector("#searchContainer");
 let citySearchTerm = document.querySelector("#city-search-term");
 let searchIcon = document.querySelector(".searchIcon");
 let titleApp = document.querySelector(".appTitle");
-let subtitle = document.querySelector(".subtitle");
+let subTitle = document.querySelector(".subTitle");
+let pastSearchesContainer = document.querySelector("#pastSearchesContainer");
 let citySearchNumber = document.querySelector("#city-search-number");
 let singleLocationDesc = document.querySelector("#singleLocationDesc");
 let singleLocationTemp = document.querySelector("#singleLocationTemp");
@@ -98,48 +96,48 @@ let statsWindSpeedSub = document.querySelector("#statsWindSpeedSub");
 let statsWindDirectionSub = document.querySelector("#statsWindDirectionSub");
 
 // Start here after form submit
-var formSubmitStart = function(event) {
+let formSubmitStart = function(event) {
+    // Stop default event from firing
     event.preventDefault();
     
-    // get value from input element
-    var cityName = nameInput.value.trim();
+    // Get value from input element
+    let cityName = nameInput.value.trim();
+    cityName = toLowCase(cityName);
 
     if (cityName) {
         lookUpCity(cityName);
         nameInput.value = "";
-        //slideSearch("false");
-        promptModal.style.display = "none";
-        searchIcon.style.display = "block";
+        displayUiElements();
     } else {
         alert("Please enter a US city name.");
     }
 };
 
-// Utility function cleaning up title case of search query
+function displayUiElements() {
+    promptModal.style.display = "none";
+    searchIcon.style.display = "block";
+    selectCityContainer.style.display = "flex";
+}
+
+// Function to make city name title case for display
 function toTitleCase(str) {
     return str.toLowerCase().split(' ').map(function (word) {
       return (word.charAt(0).toUpperCase() + word.slice(1));
     }).join(' ');
 };
 
-// Function to open/close the search field
-// Currently the code below doesn't work 
-// It is not getting invoked
-function slideSearch(actionStatus) {
-    if (actionStatus) {
-        let nameInput = document.querySelector("#cityName");
-        nameInput.classList.toggle('hidden');
-        // nameInput.classList.add("hidden");
-        // nameInput.style.width = ((nameInput.value.length + 1) * 8) + 'px';
-    } else {
-        return;
-    };
+// Function to making city name all lowercase for local storage
+function toLowCase(str) {
+    return str.toLowerCase().split(' ').map(function (word) {
+      return (word.charAt(0).toLowerCase() + word.slice(1));
+    }).join(' ');
 };
-  
-var lookUpCity = function(location) {
+
+// Function to find the lat and long of the city inputed  
+let lookUpCity = function(location) {
     // Format the API URL
-    var cityAPIValue = location+",,US";
-    var geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
+    let cityAPIValue = location+",,US";
+    let geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
 
     fetch(geoAPIUrl)
         .then(function(response) {
@@ -151,7 +149,7 @@ var lookUpCity = function(location) {
                         selectWhichCity(geoData);
                         saveToStorage(location);
                         // Show the title
-                        subtitle.style.display = "block";
+                        subTitle.style.display = "block";
                         // Change the app title
                         titleApp.textContent = "Which " + toTitleCase(location) + "?";
                         // Change the results definition
@@ -159,9 +157,9 @@ var lookUpCity = function(location) {
                         // Change the search term
                         citySearchTerm.textContent = toTitleCase(location);
                     } else {
-                        var locationName = geoData[0].name;
-                        var latValue = geoData[0].lat;
-                        var lonValue = geoData[0].lon;
+                        let locationName = geoData[0].name;
+                        let latValue = geoData[0].lat;
+                        let lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
                         saveToStorage(location);
                     }
@@ -171,15 +169,15 @@ var lookUpCity = function(location) {
             };
         })
         .catch(function(error) {
-            alert("Error: Hit the catch. City cound not be found.");
+            alert("Error: City cound not be found.");
         });
 };
 
 // Ask the user which city they want to get weather for
-var selectWhichCity = function(location) {
+let selectWhichCity = function(location) {
     // This function only fires when there are multiple locations
     
-    var sizeArray = location.length;
+    let sizeArray = location.length;
 
     // Clear old content, just in case
     weatherContainer.textContent = "";
@@ -193,13 +191,13 @@ var selectWhichCity = function(location) {
 
         /* Display results */
         // create a container for each day of the week
-        var cityEl = document.createElement("a");
-        cityEl.classList = "list-item flex-row justify-space-between align-center";
+        let cityEl = document.createElement("a");
+        cityEl.classList = "listItem flex-row justify-space-between align-center";
         cityEl.setAttribute("href", "#");
         cityEl.onclick = function() { getCityWeather(displayCity[t], displayLat[t], displayLon[t]); };
 
         // create a span element to hold city name
-        var titleEl = document.createElement("span");
+        let titleEl = document.createElement("span");
         titleEl.textContent = displayCity[t] + ", " + displayState[t];
 
         // append to container
@@ -211,10 +209,9 @@ var selectWhichCity = function(location) {
 }
 
 // Get All the weatherData By location
-var getCityWeather = function(location, latValue, lonValue) {
-
+let getCityWeather = function(location, latValue, lonValue) {
     // format the WeatherData API URL
-    var apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat="+latValue+"&lon="+lonValue+"&appid="+apiKey+"&units=imperial&exclude=hourly,minutely";
+    let apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat="+latValue+"&lon="+lonValue+"&appid="+apiKey+"&units=imperial&exclude=hourly,minutely";
      
     // make a request to the url
     fetch(apiUrl)
@@ -234,11 +231,11 @@ var getCityWeather = function(location, latValue, lonValue) {
         });
 };
 
-var saveToStorage = function(queryLocation) {
+let saveToStorage = function(queryLocation) {
     // Check if LocalStorage is empty
     if (localStorage.getItem("searchObject") === null) {
         // Create a new object
-        var searchObject = {
+        let searchObject = {
             searchLocation0: queryLocation
         }
     
@@ -247,7 +244,7 @@ var saveToStorage = function(queryLocation) {
     } else {
         // LocalStorage is not empty
         // Grab all the info in the object
-        var existing = localStorage.getItem("searchObject");
+        let existing = localStorage.getItem("searchObject");
         existing = existing ? JSON.parse(existing) : {};
         existing['searchLocation'+count] = queryLocation;
 
@@ -257,9 +254,9 @@ var saveToStorage = function(queryLocation) {
     count++;
 }
 
-var pullWeather = function(weatherData, searchTerm) {
+let pullWeather = function(weatherData, searchTerm) {
     // Check and verify if API returned any weatherData
-    var size = Object.keys(weatherData).length;
+    let size = Object.keys(weatherData).length;
     if (size === 0) {
         weatherContainer.textContent = "No city by that name found. Please try again.";
         return;
@@ -271,8 +268,8 @@ var pullWeather = function(weatherData, searchTerm) {
     // First, let's update the heading...
     titleApp.textContent = "The weather in " + searchTerm + " is...";
 
-    // Second, let's hide the subtitle (results text)
-    subtitle.style.display = "none";
+    // Second, let's hide the subTitle (results text)
+    subTitle.style.display = "none";
 
     selectCityContainer.style.display = "none";
     currentConditionsContainer.style.display = "inline-block";
@@ -375,7 +372,7 @@ var pullWeather = function(weatherData, searchTerm) {
         getUVIndexVale(dailyUVI[i], "dailyUVI[" + i + "]");
 
         /* Now update the UI */
-        //displayWeather(i);
+        //display5Day(i);
     };
 };
 
@@ -560,89 +557,92 @@ function convertUTC(utcSeconds, counter) {
     //console.log("date = " + counter + " " + utcSeconds);
 
     /* Convert utcSeconds to a Date */
-    var dtDate = new Date(0);
+    let dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
     //console.log("converted time = " + dtDate);
 
     /* Convert Date to a string */
-    var dtDateString = String(dtDate);
+    let dtDateString = String(dtDate);
 
     /* Parse the day of the week, month, day, year */
     // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
-    var splitDateArray = dtDateString.split(" ");
+    let splitDateArray = dtDateString.split(" ");
     
-    // var text = "How are you doing today?";
-    // var myArray = text.split(" ");
     //console.log(splitDateArray);
     return;
 };
+;
 
+// Function to display the search modal when search icon is clicked
+let searchButtonClick = function(event) {
+    promptModal.style.display = "block";
+    searchIcon.style.display = "none";
+    selectCityContainer.style.display = "none";
+    currentConditionsContainer.style.display = "none";
+    currentWeatherContainer.style.display = "none";
+    currentWeatherStatsContainer.style.display = "none";
+};
 
-var displayWeather = function(z) {
-    /* Display results */
+// Function fired to check if there is history.
+let checkSearchHistory = function() {
+    // Check if LocalStorage is not empty
+    if (localStorage.getItem("searchObject")) {
+        // Show the Search History area
+        pastSearchesContainer.style.display = "flex";
+        // Build the Search History buttons
+         
+        /*
+        // create a container 
+        var cityEl = document.createElement("a");
+        cityEl.classList = "listItem flex-row justify-space-between align-center";
+        cityEl.setAttribute("href", "./daily.html?city=" + cityName);
+
+        // create a span element to hold city name
+        var titleEl = document.createElement("span");
+        titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
+
+        // append to container
+        cityEl.appendChild(titleEl);
+
+        // append container to the dom
+        weatherContainer.appendChild(cityEl); 
+        */
     
-    /*
-    // create a container for each day of the week
-    var cityEl = document.createElement("a");
-    cityEl.classList = "list-item flex-row justify-space-between align-center";
-    cityEl.setAttribute("href", "./daily.html?city=" + cityName);
-
-    // create a span element to hold city name
-    var titleEl = document.createElement("span");
-    titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
-
-    // append to container
-    cityEl.appendChild(titleEl);
-
-    // append container to the dom
-    weatherContainer.appendChild(cityEl); */
+    };
 };
 
 
-// Get repos by language
-var getFeaturedRepos = function(language) {
-    // Construct the API URL var
-    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+//  Function fired when a search history button is clicked
+let searchHistoryClick = function(event) {
+    let whichSearch = event.target.getAttribute("data-search");
+    console.log(whichSearch);
     
-    //console.log(apiUrl);
-    //console.log(language);
-    
-    fetch(apiUrl).then(function(response) {
-        if(response.ok) {
-            response.json().then(function(data) {
-                displayWeather(data.items, language);
-            });
-        } else {
-            alert('Error: City was not found.');
-        }
-    });
+    // promptModal.style.display = "block";
+    // searchIcon.style.display = "none";
+    // selectCityContainer.style.display = "none";
+    // currentConditionsContainer.style.display = "none";
+    // currentWeatherContainer.style.display = "none";
+    // currentWeatherStatsContainer.style.display = "none";
+
 };
 
-var searchButtonClick = function(event) {
-    var language = event.target.getAttribute("data-language");
-    console.log("got here");
-    if (language) {
-        //getFeaturedRepos(language);
-      
-        // clear old content
-        //weatherContainer.textContent = "";
-      }
-};
-
+// Function fired after DOM has loaded
 window.addEventListener('load', function() {
-    // Look at Local Storage for history, if none, launch modal
-
+    // Check to see if there is any search history in local storage
+    checkSearchHistory();
+    
+    browserWidth = window.innerWidth;
+    browserHeight = window.innerHeight;
     // Change the display view to account for smaller devices
     if (browserWidth < 640) {
         // modify the header section for mobile devices
         currentWeatherContainer.classList.remove("flex-row");
         currentWeatherContainer.classList.add("flex-column");
-        // flexTitle.style.display = "none";
-        // flexForm.classList.remove("col-5");
-        // flexForm.classList.add("col-10");
     };
+    //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
 });
 
+// Function fired as the page is being resized
 window.addEventListener('resize', function(event){
     browserWidth = window.innerWidth;
     browserHeight = window.innerHeight;
@@ -651,15 +651,14 @@ window.addEventListener('resize', function(event){
         // modify the header section for mobile devices
         currentWeatherContainer.classList.remove("flex-row");
         currentWeatherContainer.classList.add("flex-column");
-        // flexTitle.style.display = "none";
-        // flexForm.classList.remove("col-5");
-        // flexForm.classList.add("col-10");
     };
     //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
 });
 
+// Event listeners
 cityForm.addEventListener("submit", formSubmitStart);
 searchIcon.addEventListener("click", searchButtonClick);
+cityForm.addEventListener("submit", searchHistoryClick);
 
 // Call this function after all has loaded
 changeColor(randomNumber,nightOrDay);

@@ -165,6 +165,7 @@ p {
   font-size: 1rem;
   font-weight: 500;
   text-decoration:none;
+  height: 44px;
   width: 100%;
   display: block;
   margin: 2rem 0 0 0;
@@ -184,45 +185,7 @@ p {
   background-color: rgba(255,255,255, .3);
 }
 
-/* Change the alignment of a button */
-.btn-inline {
-  display: inline;
-}
-
-.btn-back {
-  border-radius: var(--border-radius);
-  color: var(--white-color);
-  border: none;
-  outline: none;
-  background-color: var(--light-dark);
-  box-shadow: 3px 3px var(--shadow-color);
-  transform: translate(-1px, -1px);
-  display: inline-block;
-  width: auto;
-  margin-top: 20px;
-  padding: 15px;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.btn-back:hover {
-  color: var(--white-color);
-  background-color: var(--tertiary);
-  transform: translate(0, 0);
-  box-shadow: 3px 3px var(--shadow-color);
-}
-
-.hero {
-  padding: 3% 4%;
-  background-color: var(--dark);
-  color: var(--white-color);
-}
-
-.hero p {
-  max-width: 75%;
-}
-
-.subtitle {
+.subTitle {
   display: none;
   padding: 0 0 .5em 0;
   font-size: 1.5rem;
@@ -230,20 +193,20 @@ p {
 }
 
 /* This gets added after someone submits a search request */
-.hidden {
-  display: flex;
-  width: 0%;
-  opacity: 1;
-  transition: width .5s, padding .5s;
-  transition-timing-function: ease-in-out;
+#pastSearchesContainer {
+  display: none;
 }
 
-.list-group {
+.hidden {
+  display: none;
+}
+
+.listGroup {
   padding: 0;
   list-style: none;
 }
 
-.list-item {
+.listItem {
   margin-bottom: 10px;
   padding: 1.5%;
   border-radius: var(--border-radius);
@@ -254,7 +217,7 @@ p {
   text-decoration: none;
 }
 
-.list-item:hover {
+.listItem:hover {
   background-color: var(--button-hover-color);
 }
 
@@ -264,15 +227,6 @@ p {
   background-color: rgba(255,255,255, 1);
   border-radius: var(--border-radius);
 }
-
-.icon-danger {
-  color: rgb(255, 70, 70);
-}
-
-.icon-success {
-  color: rgb(29, 153, 255);
-}
-  
 
 /* Styles for the current conditions view */
 #currentConditionsContainer, #currentWeatherContainer, #currentWeatherStatsContainer {
@@ -304,7 +258,6 @@ p {
   width: 100%;
   height: 100%;
 }
-
 
 .statsTitle {
   font-weight: 500;
@@ -339,23 +292,12 @@ p {
   margin: 1% 1% 2% 1%;
 }
 
-/* CARDS */
-.card {
-  display: none;
-  margin: 0 0 20px 0;
-  border: 3px solid var(--dark);
-  border-radius: var(--border-radius);
-}
-
-.card-header {
-  color: var(--white-color);
-  background-color: var(--dark);
-  padding: 2.5%;
-  border-radius: calc(.18rem - 1px) calc(.18rem - 1px) 0 0;
-}
-
-.card-body {
-  padding: 2.5%;
+/* 5 day forcast */
+h3#searchHistoryHeader {
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  margin: 2.5em 0 0 0;
 }
 
 /* FORM */
@@ -401,11 +343,6 @@ input:focus::placeholder {
 
 .min-100-vw {
   min-width: 100vw;
-}
-
-/* FONT UTILS */
-.text-uppercase {
-  text-transform: uppercase;
 }
 
 /* FLEX CONTENT */
