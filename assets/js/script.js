@@ -409,7 +409,7 @@ function getFeelsLike(valueFeelsLike,valueHotCool) {
         statsFeelsLikeSub.textContent = "hot and" + valueHotCool;
     } else {
         // when there is no data
-        statsFeelsLikeSub.textContent = "no data";
+        statsFeelsLikeSub.textContent = "meh";
     }
     return;
 }
@@ -623,7 +623,9 @@ function displayTime(onlyTime) {
 
 // Function to display the search modal when search icon is clicked
 let searchButtonClick = function(event) {
-    checkSearchHistory();
+    // Before I show the modal, ensure the correct buttons
+    updateSearchHistory();
+    // Hide and show some views
     cityName.value = "";
     promptModal.style.display = "block";
     searchIcon.style.display = "none";
@@ -633,6 +635,23 @@ let searchButtonClick = function(event) {
     currentConditionsContainer.style.display = "none";
     currentWeatherContainer.style.display = "none";
     currentWeatherStatsContainer.style.display = "none";
+};
+
+let cereateSearchHistoryButton = function(locationValue,locationNumber) {
+    // Build the Search History buttons
+    let cityBut = document.createElement("button");
+    cityBut.classList = "btn";
+    cityBut.setAttribute("type", "button");
+    cityBut.setAttribute("id", "buttonsearchLocation" + locationNumber);
+    cityBut.setAttribute("data-search", locationValue);
+    cityBut.innerHTML = toTitleCase(locationValue);
+    // Append container to the DOM
+    searchContainer.appendChild(cityBut);
+};
+
+
+let updateSearchHistory = function() {
+    let locationArr = JSON.parse(localStorage.getItem("searchObject"));
 };
 
 // Function fired to check if there is history.
@@ -658,7 +677,6 @@ let checkSearchHistory = function() {
         };
         
         let locationArrNew = JSON.parse(localStorage.getItem("searchObject"));
-
 
         // This loop is used to get both the key and value in the array, then build the search history buttons
         for (const [key, value] of Object.entries(locationArrNew)) {
