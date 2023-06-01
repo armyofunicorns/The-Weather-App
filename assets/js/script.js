@@ -29,6 +29,7 @@ function changeColor(randomNumber,nightOrDay) {
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
 let count = 0;
+let counter = 0;
 let currentTime; 
 let currentTemp; 
 let currentFeelsLike;
@@ -66,12 +67,14 @@ const displayLat = [];
 const displayLon = []; 
 
 let cityForm = document.querySelector("#cityForm");
-let nameInput = document.querySelector("#cityName"); // actual input value
+let nameCity = document.querySelector("#cityName"); // actual input value
 let promptModal = document.querySelector("#promptModal");
 let weatherContainer = document.querySelector("#weatherContainer");
 let searchContainer = document.querySelector("#searchContainer");
 let citySearchTerm = document.querySelector("#city-search-term");
 let searchIcon = document.querySelector(".searchIcon");
+let searchTime = document.querySelector(".searchTime");
+let searchTemp = document.querySelector(".searchTemp");
 let titleApp = document.querySelector(".appTitle");
 let subTitle = document.querySelector(".subTitle");
 let pastSearchesContainer = document.querySelector("#pastSearchesContainer");
@@ -101,12 +104,13 @@ let formSubmitStart = function(event) {
     event.preventDefault();
     
     // Get value from input element
-    let cityName = nameInput.value.trim();
-    cityName = toLowCase(cityName);
+    let nameCity = cityName.value.trim();
+    nameCity = toLowCase(nameCity);
+    console.log(nameCity);
 
-    if (cityName) {
-        lookUpCity(cityName);
-        nameInput.value = "";
+    if (nameCity) {
+        lookUpCity(nameCity);
+        cityName.value = "";
         displayUiElements();
     } else {
         alert("Please enter a US city name.");
@@ -116,6 +120,8 @@ let formSubmitStart = function(event) {
 function displayUiElements() {
     promptModal.style.display = "none";
     searchIcon.style.display = "block";
+    searchTime.style.display = "block";
+    searchTemp.style.display = "block";
     selectCityContainer.style.display = "flex";
 }
 
@@ -162,7 +168,7 @@ let lookUpCity = function(location) {
                         let lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
                         saveToStorage(location);
-                    }
+                    };  
                 });
             } else  {
                 alert("Error: City could not be found.");
@@ -232,24 +238,28 @@ let getCityWeather = function(location, latValue, lonValue) {
 };
 
 let saveToStorage = function(queryLocation) {
+    let locationArr = JSON.parse(localStorage.getItem("searchObject"));
+
     // Check if LocalStorage is empty
-    if (localStorage.getItem("searchObject") === null) {
+    if (locationArr) {
+        // LocalStorage is not empty
+        const arrayLength = Object.keys(locationArr).length;
+        locationArr = locationArr ? locationArr : {};
+        locationArr['searchLocation'+ arrayLength] = queryLocation;
+        console.log(localStorage.getItem("searchObject").includes(queryLocation));
+        
+        // Update the request only if it didn't exist
+        if (localStorage.getItem("searchObject").includes(queryLocation) == false) {    
+            localStorage.setItem('searchObject', JSON.stringify(locationArr));
+        };
+    } else {
         // Create a new object
         let searchObject = {
             searchLocation0: queryLocation
         }
-    
+
         // Add the object in LocalStorage
         localStorage.setItem("searchObject", JSON.stringify(searchObject));
-    } else {
-        // LocalStorage is not empty
-        // Grab all the info in the object
-        let existing = localStorage.getItem("searchObject");
-        existing = existing ? JSON.parse(existing) : {};
-        existing['searchLocation'+count] = queryLocation;
-
-        // Update the request
-        localStorage.setItem('searchObject', JSON.stringify(existing));
     };
     count++;
 }
@@ -549,26 +559,41 @@ function getWindDirection(valueDirection) {
 
 function getCurrentTime() {
     /* Get the current time */
-    let currentTimeAWH = Math.floor(new Date().getTime()/1000.0);
-    console.log("current time = " + currentTimeAWH);
+    let currentTime = Math.floor(new Date().getTime()/1000.0);
+    // console.log("current time = " + currentTime);
+    convertUTC(currentTime)
 };
 
-function convertUTC(utcSeconds, counter) {
-    //console.log("date = " + counter + " " + utcSeconds);
+function convertUTC(utcSeconds) {
+    // console.log("date = " + utcSeconds);
 
     /* Convert utcSeconds to a Date */
     let dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
-    //console.log("converted time = " + dtDate);
+    // console.log("converted time = " + dtDate);
 
     /* Convert Date to a string */
     let dtDateString = String(dtDate);
+    // console.log(dtDateString);
 
     /* Parse the day of the week, month, day, year */
     // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
     let splitDateArray = dtDateString.split(" ");
+    // console.log(splitDateArray);
+    let onlyTime = splitDateArray[4];
+    // console.log(onlyTime);
+    // console.log(typeof onlyTime);
+    let onlyTimeConverted = onlyTime.split(":");
+    let onlyTimeDay;
+    let onlyTimeConvertFirstNumber;
+    if (Number(onlyTimeConverted[0] > 12)) {
+        onlyTimeDay = "PM";
+        onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
+    } else {
+        onlyTimeDay = "AM";
+    };
     
-    //console.log(splitDateArray);
+    searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
     return;
 };
 ;
@@ -577,6 +602,8 @@ function convertUTC(utcSeconds, counter) {
 let searchButtonClick = function(event) {
     promptModal.style.display = "block";
     searchIcon.style.display = "none";
+    searchTime.style.display = "none";
+    searchTemp.style.display = "none";
     selectCityContainer.style.display = "none";
     currentConditionsContainer.style.display = "none";
     currentWeatherContainer.style.display = "none";
@@ -585,49 +612,55 @@ let searchButtonClick = function(event) {
 
 // Function fired to check if there is history.
 let checkSearchHistory = function() {
+    // Define what we are looking for in localStorage
+    let locationArr = JSON.parse(localStorage.getItem("searchObject"));
+    
     // Check if LocalStorage is not empty
-    if (localStorage.getItem("searchObject")) {
+    if (locationArr) {
+        // Array is not empty
+        // Get the length (key value pairs) in the array the array 
+        const arrayLength = Object.keys(locationArr).length;
+        
+        // This loop was used for testing whether I could get the values in an array
+        for(let key in locationArr) {
+            // increase the count
+            ++counter;
+        };
+
+        // This loop is used to get both the key and value in the array
+        for (const [key, value] of Object.entries(locationArr)) {
+            // Build the Search History buttons
+            let cityBut = document.createElement("button");
+            // cityBut.classList = "listItem flex-row justify-space-around align-end";
+            cityBut.classList = "btn";
+            cityBut.setAttribute("type", "button");
+            cityBut.setAttribute("id", "button" + `${key}`);
+            cityBut.setAttribute("data-search", `${value}`);
+            cityBut.innerHTML = toTitleCase(`${value}`);
+
+            // Append container to the DOM
+            searchContainer.appendChild(cityBut);
+        };
+        
         // Show the Search History area
         pastSearchesContainer.style.display = "flex";
-        // Build the Search History buttons
-         
-        /*
-        // create a container 
-        var cityEl = document.createElement("a");
-        cityEl.classList = "listItem flex-row justify-space-between align-center";
-        cityEl.setAttribute("href", "./daily.html?city=" + cityName);
-
-        // create a span element to hold city name
-        var titleEl = document.createElement("span");
-        titleEl.textContent = dailyTempMax[z] + "/" + dailyTempMin[z];
-
-        // append to container
-        cityEl.appendChild(titleEl);
-
-        // append container to the dom
-        weatherContainer.appendChild(cityEl); 
-        */
-    
     };
 };
-
 
 //  Function fired when a search history button is clicked
 let searchHistoryClick = function(event) {
     let whichSearch = event.target.getAttribute("data-search");
-    console.log(whichSearch);
-    
-    // promptModal.style.display = "block";
-    // searchIcon.style.display = "none";
-    // selectCityContainer.style.display = "none";
-    // currentConditionsContainer.style.display = "none";
-    // currentWeatherContainer.style.display = "none";
-    // currentWeatherStatsContainer.style.display = "none";
-
+    whichSearch = toTitleCase(whichSearch);
+    cityName.value = whichSearch;
+    lookUpCity(whichSearch);
+    displayUiElements();
 };
 
 // Function fired after DOM has loaded
 window.addEventListener('load', function() {
+    getCurrentTime();
+    
+    cityName.blur();
     // Check to see if there is any search history in local storage
     checkSearchHistory();
     
@@ -639,7 +672,6 @@ window.addEventListener('load', function() {
         currentWeatherContainer.classList.remove("flex-row");
         currentWeatherContainer.classList.add("flex-column");
     };
-    //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
 });
 
 // Function fired as the page is being resized
@@ -658,7 +690,7 @@ window.addEventListener('resize', function(event){
 // Event listeners
 cityForm.addEventListener("submit", formSubmitStart);
 searchIcon.addEventListener("click", searchButtonClick);
-cityForm.addEventListener("submit", searchHistoryClick);
+searchContainer.addEventListener("click", searchHistoryClick);
 
 // Call this function after all has loaded
 changeColor(randomNumber,nightOrDay);

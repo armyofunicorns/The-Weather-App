@@ -17,22 +17,22 @@
 <body class="flex-column min-100-vh" id="anotherNamePerhaps">
   
   <div id="headerMenu" class="headerMenu flex-row justify-flex-end align-center">
+    <div class="searchTime"></div>
+    <div class="searchTemp">all data in °F, mph</div>
     <div class="searchIcon"></div>  
   </div>
   <!-- City name search form - Built like a modal -->
   <div id="promptModal" class="promptModal">
     <div class="promptModalContent">
       <h1>Hello. Looking for the weather?</h1>
-      <form id="cityForm">
+      <form id="cityForm" autocomplete="off">
         <i class="icon"></i>
         <input placeholder="Please, enter a city name, then hit Return..." name="cityName" id="cityName" type="text" autofocus="false" class="form-input" />
         <input type="submit" value="Search for city" id="submitBtn" style="display: none;" class="btn" />
       </form>
-      <div id="pastSearchesContainer" class="flex-row justify-space-around align-center">
+      <div id="pastSearchesContainer" class="flex-row">
         <h3 id="searchHistoryHeader">Past Searches</h3>
-        <div id="searchContainer" class="listGroup"></div>
-          <button data-search="berkeley" type="submit" class="btn">Berkeley</button>         
-        </div>
+        <div id="searchContainer" class="flex-row justify-center align-center"></div>
       </div>
     </div>
     </div>
