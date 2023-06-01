@@ -30,6 +30,7 @@ function changeColor(randomNumber,nightOrDay) {
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
 let count = 0;
 let counter = 0;
+let delFlag;
 let currentTime; 
 let currentTemp; 
 let currentFeelsLike;
@@ -106,7 +107,7 @@ let formSubmitStart = function(event) {
     // Get value from input element
     let nameCity = cityName.value.trim();
     nameCity = toLowCase(nameCity);
-    console.log(nameCity);
+    // console.log(nameCity);
 
     if (nameCity) {
         lookUpCity(nameCity);
@@ -197,20 +198,20 @@ let selectWhichCity = function(location) {
 
         /* Display results */
         // create a container for each day of the week
-        let cityEl = document.createElement("a");
-        cityEl.classList = "listItem flex-row justify-space-between align-center";
-        cityEl.setAttribute("href", "#");
-        cityEl.onclick = function() { getCityWeather(displayCity[t], displayLat[t], displayLon[t]); };
+        let displayCityRow = document.createElement("a");
+        displayCityRow.classList = "listItem flex-row justify-space-between align-center";
+        displayCityRow.setAttribute("href", "#");
+        displayCityRow.onclick = function() { getCityWeather(displayCity[t], displayLat[t], displayLon[t]); };
 
         // create a span element to hold city name
         let titleEl = document.createElement("span");
         titleEl.textContent = displayCity[t] + ", " + displayState[t];
 
         // append to container
-        cityEl.appendChild(titleEl);
+        displayCityRow.appendChild(titleEl);
 
         // append container to the dom
-        weatherContainer.appendChild(cityEl);
+        weatherContainer.appendChild(displayCityRow);
     };
 }
 
@@ -244,12 +245,16 @@ let saveToStorage = function(queryLocation) {
     if (locationArr) {
         // LocalStorage is not empty
         const arrayLength = Object.keys(locationArr).length;
+        // console.log(arrayLength);
         locationArr = locationArr ? locationArr : {};
         locationArr['searchLocation'+ arrayLength] = queryLocation;
-        console.log(localStorage.getItem("searchObject").includes(queryLocation));
+        // console.log(localStorage.getItem("searchObject").includes(queryLocation));
         
         // Update the request only if it didn't exist
         if (localStorage.getItem("searchObject").includes(queryLocation) == false) {    
+            console.log("save to localstorage ");
+            let currentSearchHistoryLength = arrayLength + 1;
+            // Add the location to localStorage
             localStorage.setItem('searchObject', JSON.stringify(locationArr));
         };
     } else {
@@ -450,12 +455,15 @@ function getUVIndexVale(valueUVI, whatUVIVarName) {
         } else if (valueUVI <= 2) {
             // value is favorable
             statsUvIndexSub.textContent = "favorable";
+            statsUvIndexSub.style.color = "#00FF00";
         } else if ((valueUVI > 2) && (valueUVI <= 7)) {
             // value is moderate
             statsUvIndexSub.textContent = "moderate";
+            statsUvIndexSub.style.color = "#FFFF00";
         } else if (valueUVI > 7) {
             // value is severe
             statsUvIndexSub.textContent = "severe";
+            statsUvIndexSub.style.color = "#FF0000";
         } else {
             statsUvIndexSub.textContent = "no data";
         }
@@ -561,7 +569,7 @@ function getCurrentTime() {
     /* Get the current time */
     let currentTime = Math.floor(new Date().getTime()/1000.0);
     // console.log("current time = " + currentTime);
-    convertUTC(currentTime)
+    convertUTC(currentTime);
 };
 
 function convertUTC(utcSeconds) {
@@ -580,26 +588,43 @@ function convertUTC(utcSeconds) {
     // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
     let splitDateArray = dtDateString.split(" ");
     // console.log(splitDateArray);
-    let onlyTime = splitDateArray[4];
-    // console.log(onlyTime);
-    // console.log(typeof onlyTime);
-    let onlyTimeConverted = onlyTime.split(":");
-    let onlyTimeDay;
-    let onlyTimeConvertFirstNumber;
-    if (Number(onlyTimeConverted[0] > 12)) {
-        onlyTimeDay = "PM";
-        onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
-    } else {
-        onlyTimeDay = "AM";
-    };
     
-    searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
+    let onlyTime = splitDateArray[4];
+    
+    displayTime(onlyTime);
     return;
 };
-;
+
+function displayTime(onlyTime) {
+    // console.log(onlyTime);
+    // console.log(typeof onlyTime);
+    if (delFlag == 1) {
+
+    } else {
+        delFlag = 1;
+        // console.log(delFlag);
+
+        let onlyTimeConverted = onlyTime.split(":");
+        let onlyTimeDay;
+        let onlyTimeConvertFirstNumber;
+        // console.log(onlyTimeConverted[0]);
+
+        if (Number(onlyTimeConverted[0] > 12)) {
+            onlyTimeDay = "PM";
+            onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
+        } else {
+            onlyTimeDay = "AM";
+            onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]);
+        };
+        searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
+        return;   
+    }
+};
 
 // Function to display the search modal when search icon is clicked
 let searchButtonClick = function(event) {
+    checkSearchHistory();
+    cityName.value = "";
     promptModal.style.display = "block";
     searchIcon.style.display = "none";
     searchTime.style.display = "none";
@@ -614,6 +639,8 @@ let searchButtonClick = function(event) {
 let checkSearchHistory = function() {
     // Define what we are looking for in localStorage
     let locationArr = JSON.parse(localStorage.getItem("searchObject"));
+    let otherArr = localStorage.getItem("searchObject");
+    console.log(otherArr);
     
     // Check if LocalStorage is not empty
     if (locationArr) {
@@ -621,17 +648,22 @@ let checkSearchHistory = function() {
         // Get the length (key value pairs) in the array the array 
         const arrayLength = Object.keys(locationArr).length;
         
-        // This loop was used for testing whether I could get the values in an array
+        // Remove all the search history buttons
         for(let key in locationArr) {
             // increase the count
+            console.log(key);
+            let newElement = "button" + key;
+            let element = document.getElementById(newElement);
             ++counter;
         };
+        
+        let locationArrNew = JSON.parse(localStorage.getItem("searchObject"));
 
-        // This loop is used to get both the key and value in the array
-        for (const [key, value] of Object.entries(locationArr)) {
+
+        // This loop is used to get both the key and value in the array, then build the search history buttons
+        for (const [key, value] of Object.entries(locationArrNew)) {
             // Build the Search History buttons
             let cityBut = document.createElement("button");
-            // cityBut.classList = "listItem flex-row justify-space-around align-end";
             cityBut.classList = "btn";
             cityBut.setAttribute("type", "button");
             cityBut.setAttribute("id", "button" + `${key}`);
@@ -650,7 +682,7 @@ let checkSearchHistory = function() {
 //  Function fired when a search history button is clicked
 let searchHistoryClick = function(event) {
     let whichSearch = event.target.getAttribute("data-search");
-    whichSearch = toTitleCase(whichSearch);
+    whichSearch = toLowCase(whichSearch);
     cityName.value = whichSearch;
     lookUpCity(whichSearch);
     displayUiElements();
@@ -658,8 +690,6 @@ let searchHistoryClick = function(event) {
 
 // Function fired after DOM has loaded
 window.addEventListener('load', function() {
-    getCurrentTime();
-    
     cityName.blur();
     // Check to see if there is any search history in local storage
     checkSearchHistory();
@@ -694,3 +724,7 @@ searchContainer.addEventListener("click", searchHistoryClick);
 
 // Call this function after all has loaded
 changeColor(randomNumber,nightOrDay);
+
+// SetTimeout for getting and updating the time
+setTimeout(getCurrentTime,1000);
+// setInterval(checkSearchHistory,1000);
