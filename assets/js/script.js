@@ -31,6 +31,7 @@ let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
 let count = 0;
 let counter = 0;
 let delFlag;
+let locationAlreadyInArray;
 let currentTime; 
 let currentTemp; 
 let currentFeelsLike;
@@ -46,6 +47,7 @@ let currentWeatherIcon;
 let currentWeatherIconURL;
 let diffFeelsLikeBooleanValue;
 
+const searchedLocations = [];
 const dailyTime = [];
 const dailyTempDay = [];
 const dailyTempMax = [];
@@ -155,6 +157,7 @@ let lookUpCity = function(location) {
                     if (geoData.length > 1) {
                         selectWhichCity(geoData);
                         saveToStorage(location);
+                        createSearchHistoryButton(location);
                         // Show the title
                         subTitle.style.display = "block";
                         // Change the app title
@@ -169,6 +172,7 @@ let lookUpCity = function(location) {
                         let lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
                         saveToStorage(location);
+                        createSearchHistoryButton(location);
                     };  
                 });
             } else  {
@@ -204,11 +208,11 @@ let selectWhichCity = function(location) {
         displayCityRow.onclick = function() { getCityWeather(displayCity[t], displayLat[t], displayLon[t]); };
 
         // create a span element to hold city name
-        let titleEl = document.createElement("span");
-        titleEl.textContent = displayCity[t] + ", " + displayState[t];
+        let titleHeading = document.createElement("span");
+        titleHeading.textContent = displayCity[t] + ", " + displayState[t];
 
         // append to container
-        displayCityRow.appendChild(titleEl);
+        displayCityRow.appendChild(titleHeading);
 
         // append container to the dom
         weatherContainer.appendChild(displayCityRow);
@@ -240,19 +244,21 @@ let getCityWeather = function(location, latValue, lonValue) {
 
 let saveToStorage = function(queryLocation) {
     let locationArr = JSON.parse(localStorage.getItem("searchObject"));
-
     // Check if LocalStorage is empty
     if (locationArr) {
         // LocalStorage is not empty
+        // Variable to get the number of values in localStorage 
         const arrayLength = Object.keys(locationArr).length;
+        
+        searchedLocations[arrayLength] = queryLocation;
+        console.log(searchedLocations);
         // console.log(arrayLength);
         locationArr = locationArr ? locationArr : {};
         locationArr['searchLocation'+ arrayLength] = queryLocation;
-        // console.log(localStorage.getItem("searchObject").includes(queryLocation));
         
         // Update the request only if it didn't exist
         if (localStorage.getItem("searchObject").includes(queryLocation) == false) {    
-            console.log("save to localstorage ");
+            // console.log("save to localstorage ");
             let currentSearchHistoryLength = arrayLength + 1;
             // Add the location to localStorage
             localStorage.setItem('searchObject', JSON.stringify(locationArr));
@@ -623,8 +629,6 @@ function displayTime(onlyTime) {
 
 // Function to display the search modal when search icon is clicked
 let searchButtonClick = function(event) {
-    // Before I show the modal, ensure the correct buttons
-    updateSearchHistory();
     // Hide and show some views
     cityName.value = "";
     promptModal.style.display = "block";
@@ -637,49 +641,47 @@ let searchButtonClick = function(event) {
     currentWeatherStatsContainer.style.display = "none";
 };
 
-let cereateSearchHistoryButton = function(locationValue,locationNumber) {
-    // Build the Search History buttons
-    let cityBut = document.createElement("button");
-    cityBut.classList = "btn";
-    cityBut.setAttribute("type", "button");
-    cityBut.setAttribute("id", "buttonsearchLocation" + locationNumber);
-    cityBut.setAttribute("data-search", locationValue);
-    cityBut.innerHTML = toTitleCase(locationValue);
-    // Append container to the DOM
-    searchContainer.appendChild(cityBut);
-};
-
-
-let updateSearchHistory = function() {
+let createSearchHistoryButton = function(location) {
     let locationArr = JSON.parse(localStorage.getItem("searchObject"));
+    const arrayLengthCreate = Object.keys(locationArr).length;
+
+    // Build the Search History buttons
+    let cityButNew = document.createElement("button");
+    cityButNew.classList = "btn";
+    cityButNew.setAttribute("type", "button");
+    cityButNew.setAttribute("id", "buttonsearchLocation" + arrayLengthCreate);
+    cityButNew.setAttribute("data-search", location);
+    cityButNew.innerHTML = toTitleCase(location);
+
+    // Append container to the DOM
+    searchContainer.appendChild(cityButNew);
+
+    for (const [key, value] of Object.entries(locationArr)) {
+        let whatIsValue = toLowCase(`${value}`);
+        console.log(whatIsValue);
+        if (whatIsValue == location) {
+            locationAlreadyInArray = true;
+            console.log(locationAlreadyInArray);
+            return;
+        } 
+    };  
+    // Show the Search History area
+    // pastSearchesContainer.style.display = "flex";
 };
 
-// Function fired to check if there is history.
+// Function fired to check if there is history and to build the history buttons.
 let checkSearchHistory = function() {
     // Define what we are looking for in localStorage
     let locationArr = JSON.parse(localStorage.getItem("searchObject"));
-    let otherArr = localStorage.getItem("searchObject");
-    console.log(otherArr);
     
     // Check if LocalStorage is not empty
     if (locationArr) {
         // Array is not empty
         // Get the length (key value pairs) in the array the array 
         const arrayLength = Object.keys(locationArr).length;
-        
-        // Remove all the search history buttons
-        for(let key in locationArr) {
-            // increase the count
-            console.log(key);
-            let newElement = "button" + key;
-            let element = document.getElementById(newElement);
-            ++counter;
-        };
-        
-        let locationArrNew = JSON.parse(localStorage.getItem("searchObject"));
 
         // This loop is used to get both the key and value in the array, then build the search history buttons
-        for (const [key, value] of Object.entries(locationArrNew)) {
+        for (const [key, value] of Object.entries(locationArr)) {
             // Build the Search History buttons
             let cityBut = document.createElement("button");
             cityBut.classList = "btn";
@@ -745,4 +747,3 @@ changeColor(randomNumber,nightOrDay);
 
 // SetTimeout for getting and updating the time
 setTimeout(getCurrentTime,1000);
-// setInterval(checkSearchHistory,1000);

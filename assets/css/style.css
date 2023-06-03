@@ -206,7 +206,7 @@ p {
 
 /* This gets added after someone submits a search request */
 #pastSearchesContainer {
-  display: none;
+  display: flex;
 }
 
 .hidden {
