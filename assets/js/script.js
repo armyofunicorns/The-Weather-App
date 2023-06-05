@@ -109,12 +109,11 @@ let formSubmitStart = function(event) {
     // Get value from input element
     let nameCity = cityName.value.trim();
     nameCity = toLowCase(nameCity);
-    // console.log(nameCity);
 
     if (nameCity) {
         lookUpCity(nameCity);
-        cityName.value = "";
         displayUiElements();
+        cityName.value = "";
     } else {
         alert("Please enter a US city name.");
     }
@@ -251,14 +250,11 @@ let saveToStorage = function(queryLocation) {
         const arrayLength = Object.keys(locationArr).length;
         
         searchedLocations[arrayLength] = queryLocation;
-        console.log(searchedLocations);
-        // console.log(arrayLength);
         locationArr = locationArr ? locationArr : {};
         locationArr['searchLocation'+ arrayLength] = queryLocation;
         
         // Update the request only if it didn't exist
         if (localStorage.getItem("searchObject").includes(queryLocation) == false) {    
-            // console.log("save to localstorage ");
             let currentSearchHistoryLength = arrayLength + 1;
             // Add the location to localStorage
             localStorage.setItem('searchObject', JSON.stringify(locationArr));
@@ -292,7 +288,7 @@ let pullWeather = function(weatherData, searchTerm) {
     // Second, let's hide the subTitle (results text)
     subTitle.style.display = "none";
 
-    selectCityContainer.style.display = "none";
+    // selectCityContainer.style.display = "none";
     currentConditionsContainer.style.display = "inline-block";
     currentWeatherContainer.style.display = "flex";
     currentWeatherStatsContainer.style.display = "flex";
@@ -385,7 +381,7 @@ let pullWeather = function(weatherData, searchTerm) {
         dailyWindSpeed[i] = weatherData.daily[i].wind_speed;
         dailyWindDegrees[i] = weatherData.daily[i].wind_deg;
         dailyWeatherIcon[i] = weatherData.daily[i].weather[0].icon;
-        let dailyWeatherIconURL = "https://openweathermap.org/img/wn/" + dailyWeatherIcon[i] + "@4x.png";
+        let dailyWeatherIconURL = "/assets/images/" + dailyWeatherIcon[i] + "@1x.png";
         dailyClouds[i] = weatherData.daily[i].clouds;
         dailyPOP[i] = weatherData.daily[i].pop;
         dailyUVI[i] = weatherData.daily[i].uvi;
@@ -393,8 +389,13 @@ let pullWeather = function(weatherData, searchTerm) {
         getUVIndexVale(dailyUVI[i], "dailyUVI[" + i + "]");
 
         /* Now update the UI */
-        //display5Day(i);
+        display5Day(i);
     };
+};
+
+function display5Day(t) {
+    fiveDayForecastHeader.style.display = "block";
+    fiveDayForecastCardContainer.style.display = "block";
 };
 
 function getFeelsLike(valueFeelsLike,valueHotCool) {
@@ -574,26 +575,20 @@ function getWindDirection(valueDirection) {
 function getCurrentTime() {
     /* Get the current time */
     let currentTime = Math.floor(new Date().getTime()/1000.0);
-    // console.log("current time = " + currentTime);
     convertUTC(currentTime);
 };
 
 function convertUTC(utcSeconds) {
-    // console.log("date = " + utcSeconds);
-
     /* Convert utcSeconds to a Date */
     let dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
-    // console.log("converted time = " + dtDate);
 
     /* Convert Date to a string */
     let dtDateString = String(dtDate);
-    // console.log(dtDateString);
 
     /* Parse the day of the week, month, day, year */
     // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
     let splitDateArray = dtDateString.split(" ");
-    // console.log(splitDateArray);
     
     let onlyTime = splitDateArray[4];
     
@@ -602,18 +597,14 @@ function convertUTC(utcSeconds) {
 };
 
 function displayTime(onlyTime) {
-    // console.log(onlyTime);
-    // console.log(typeof onlyTime);
     if (delFlag == 1) {
 
     } else {
         delFlag = 1;
-        // console.log(delFlag);
 
         let onlyTimeConverted = onlyTime.split(":");
         let onlyTimeDay;
         let onlyTimeConvertFirstNumber;
-        // console.log(onlyTimeConverted[0]);
 
         if (Number(onlyTimeConverted[0] > 12)) {
             onlyTimeDay = "PM";
@@ -639,6 +630,8 @@ let searchButtonClick = function(event) {
     currentConditionsContainer.style.display = "none";
     currentWeatherContainer.style.display = "none";
     currentWeatherStatsContainer.style.display = "none";
+    fiveDayForecastHeader.style.display = "none"; 
+    fiveDayForecastCardContainer.style.display = "none";
 };
 
 let createSearchHistoryButton = function(location) {
@@ -658,15 +651,11 @@ let createSearchHistoryButton = function(location) {
 
     for (const [key, value] of Object.entries(locationArr)) {
         let whatIsValue = toLowCase(`${value}`);
-        console.log(whatIsValue);
         if (whatIsValue == location) {
             locationAlreadyInArray = true;
-            console.log(locationAlreadyInArray);
             return;
         } 
     };  
-    // Show the Search History area
-    // pastSearchesContainer.style.display = "flex";
 };
 
 // Function fired to check if there is history and to build the history buttons.
@@ -704,6 +693,7 @@ let searchHistoryClick = function(event) {
     let whichSearch = event.target.getAttribute("data-search");
     whichSearch = toLowCase(whichSearch);
     cityName.value = whichSearch;
+    selectCityContainer.style.display = "none";
     lookUpCity(whichSearch);
     displayUiElements();
 };
@@ -734,7 +724,6 @@ window.addEventListener('resize', function(event){
         currentWeatherContainer.classList.remove("flex-row");
         currentWeatherContainer.classList.add("flex-column");
     };
-    //console.log('Window size: ' + window.innerWidth + 'x' + window.innerHeight);
 });
 
 // Event listeners
