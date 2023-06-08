@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on May 26, 2023 */
+/* Updated on June 5, 2023 */
 
 // Establish day or night
 let currentTimeofDay = new Date();
@@ -394,6 +394,8 @@ let pullWeather = function(weatherData, searchTerm) {
 };
 
 function display5Day(t) {
+    
+    
     fiveDayForecastHeader.style.display = "block";
     fiveDayForecastCardContainer.style.display = "block";
 };
