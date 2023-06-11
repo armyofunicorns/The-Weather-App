@@ -1,30 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on June 5, 2023 */
-
-// Establish day or night
-let currentTimeofDay = new Date();
-let currentTimeInTheDay = currentTimeofDay.getHours();
-
-if (currentTimeInTheDay >= 19) {
-    var nightOrDay = "Night";
-} else if (currentTimeInTheDay < 6) {
-    var nightOrDay = "Night";
-} else {
-    var nightOrDay = "Day";
-}
-
-// Establish a random number between 1 and 4, used to determine which background to display
-min = Math.ceil(1);
-max = Math.floor(5);
-let randomNumber = Math.floor(Math.random() * (max - min) + min);
-
-function changeColor(randomNumber,nightOrDay) {
-    // Identify what we will be updating
-    const backGradient = document.getElementById("anotherNamePerhaps");
-
-    let correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
-    backGradient.className = correctClass;
-};
+/* Updated on June 8, 2023 */
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
@@ -32,6 +7,12 @@ let count = 0;
 let counter = 0;
 let delFlag;
 let locationAlreadyInArray;
+let currentDate;
+let monthCurrent3letters;
+let dayCurrent3letters;
+let yearCurrent3letters;
+let dayOfWeek3letters;
+let maxDays;
 let currentTime; 
 let currentTemp; 
 let currentFeelsLike;
@@ -48,7 +29,9 @@ let currentWeatherIconURL;
 let diffFeelsLikeBooleanValue;
 
 const searchedLocations = [];
+const dailyDate = [];
 const dailyTime = [];
+const dailyDayOfWeek = [];
 const dailyTempDay = [];
 const dailyTempMax = [];
 const dailyTempMin = [];
@@ -100,6 +83,32 @@ let statsPressureSub = document.querySelector("#statsPressureSub");
 let statsUvIndexSub = document.querySelector("#statsUvIndexSub");
 let statsWindSpeedSub = document.querySelector("#statsWindSpeedSub");
 let statsWindDirectionSub = document.querySelector("#statsWindDirectionSub");
+let fiveDayForecastCards = document.querySelector("#fiveDayForecastCards");
+
+// Establish day or night
+let currentTimeofDay = new Date();
+let currentTimeInTheDay = currentTimeofDay.getHours();
+
+if (currentTimeInTheDay >= 19) {
+    var nightOrDay = "Night";
+} else if (currentTimeInTheDay < 6) {
+    var nightOrDay = "Night";
+} else {
+    var nightOrDay = "Day";
+};
+
+// Establish a random number between 1 and 4, used to determine which background to display
+min = Math.ceil(1);
+max = Math.floor(5);
+let randomNumber = Math.floor(Math.random() * (max - min) + min);
+
+function changeColor(randomNumber,nightOrDay) {
+    // Identify what we will be updating
+    const backGradient = document.getElementById("anotherNamePerhaps");
+
+    let correctClass = "flex-column min-100-vh" + " chooseBackground" + nightOrDay + randomNumber;
+    backGradient.className = correctClass;
+};
 
 // Start here after form submit
 let formSubmitStart = function(event) {
@@ -125,7 +134,7 @@ function displayUiElements() {
     searchTime.style.display = "block";
     searchTemp.style.display = "block";
     selectCityContainer.style.display = "flex";
-}
+};
 
 // Function to make city name title case for display
 function toTitleCase(str) {
@@ -139,6 +148,120 @@ function toLowCase(str) {
     return str.toLowerCase().split(' ').map(function (word) {
       return (word.charAt(0).toLowerCase() + word.slice(1));
     }).join(' ');
+};
+
+function getDayOfTheWeek(currentDayOfTheWeek) {
+    if (currentDayOfTheWeek == 0) {
+        return dayOfWeek3letters = "Sun"
+    } else if (currentDayOfTheWeek == 1) {
+        return dayOfWeek3letters = "Mon"
+    } else if (currentDayOfTheWeek == 2) {
+        return dayOfWeek3letters = "Tue"
+    } else if (currentDayOfTheWeek == 3) {
+        return dayOfWeek3letters = "Wed"
+    } else if (currentDayOfTheWeek == 4) {
+        return dayOfWeek3letters = "Thu"
+    } else if (currentDayOfTheWeek == 5) {
+        return dayOfWeek3letters = "Fri"
+    } else {
+        return dayOfWeek3letters = "Sat"
+    };
+};
+
+function constructDate() {
+    // Capture the current date
+    let dateCurrent = new Date();
+    let yearCurrent = dateCurrent.getFullYear();
+    let monthCurrent = dateCurrent.getMonth();
+    let dayCurrent = dateCurrent.getDate();
+
+    // Get the current day of the week
+    let dayOfWeekCurrent = dateCurrent.getDay();
+    let dayOfWeek3letters = getDayOfTheWeek(dayOfWeekCurrent);
+    console.log(dayOfWeek3letters);
+    
+    // Build the dailyDayOfWeek array
+    dailyDayOfWeek.push(dayOfWeek3letters);
+    console.log(dailyDayOfWeek[0]);
+
+    for (let tt=1; tt <= 6; tt++) {
+        
+        if (dayOfWeekCurrent < 6) {
+            dayOfWeekCurrent++;
+        } else {
+            dayOfWeekCurrent = 0;
+        };
+            
+        console.log(dayOfWeekCurrent);
+        dayOfWeek3letters = getDayOfTheWeek(dayOfWeekCurrent);
+        console.log(dayOfWeek3letters);
+        dailyDayOfWeek.push(dayOfWeek3letters);
+        console.log(dailyDayOfWeek[tt]);
+    };
+
+    // Create the date array
+    for (let dd=0; dd < 5; dd++) {
+        // Figure out the month
+        if (monthCurrent == 1) {
+            monthCurrent3letters = "Jan";
+            maxDays = 31;
+        } else if (monthCurrent == 2) {
+            monthCurrent3letters = "Feb";
+            if ((yearCurrent == 2024) || (yearCurrent == 2028)) {
+                maxDays = 29;
+            } else {
+                maxDays = 28;
+            };
+        } else if (monthCurrent == 3) {
+            monthCurrent3letters = "Mar";
+            maxDays = 31;
+        } else if (monthCurrent == 4) {
+            monthCurrent3letters = "Apr";
+            maxDays = 30;
+        } else if (monthCurrent == 5) {
+            monthCurrent3letters = "May";
+            maxDays = 31;
+        } else if (monthCurrent == 6) {
+            monthCurrent3letters = "Jun";
+            maxDays = 30;
+        } else if (monthCurrent == 7) {
+            monthCurrent3letters = "Jul";
+            maxDays = 31;
+        } else if (monthCurrent == 8) {
+            monthCurrent3letters = "Aug";
+            maxDays = 31;
+        } else if (monthCurrent == 9) {
+            monthCurrent3letters = "Sep";
+            maxDays = 30;
+        } else if (monthCurrent == 10) {
+            monthCurrent3letters = "Oct";
+            maxDays = 31;
+        } else if (monthCurrent == 11) {
+            monthCurrent3letters = "Nov";
+            maxDays = 30;
+        } else {
+            monthCurrent3letters = "Dec";
+            maxDays = 31;
+        };
+
+        // Figure out the day
+        if (dayCurrent >= maxDays) {
+            dayCurrent3letters = 1;
+        } else {
+            dayCurrent3letters = dayCurrent + dd;
+        };
+
+        if ((dayCurrent3letters >= 1) && (monthCurrent > 11)) {
+            yearCurrent3letters = yearCurrent + 1;
+        } else {
+            yearCurrent3letters = yearCurrent;
+        };
+
+        // Construct the actual date
+        dailyDate[dd] = monthCurrent3letters + " " + dayCurrent3letters + ", " + yearCurrent;
+
+        console.log(dailyDate[dd]);
+    };
 };
 
 // Function to find the lat and long of the city inputed  
@@ -337,7 +460,7 @@ let pullWeather = function(weatherData, searchTerm) {
         diffFeelsLikeBooleanValue = " same";
     } else {
         diffFeelsLikeBooleanValue = " hotter";
-    }
+    };
     
     // Determine the sub text for feels like
     getFeelsLike(diffFeelsLikeValue,diffFeelsLikeBooleanValue);
@@ -394,7 +517,50 @@ let pullWeather = function(weatherData, searchTerm) {
 };
 
 function display5Day(t) {
-    
+    if (t < 5) {
+        // Create the outer card for each day
+        let fiveDayForecastCard = document.createElement("div");
+        fiveDayForecastCard.classList = "fiveDayForecastCard";
+        fiveDayForecastCard.setAttribute("id", "fiveDayForecastCard" + t);
+        
+        // Step 1 Get day of the week
+        let fiveDayDOWElement = document.createElement("div");
+        fiveDayDOWElement.classList = "dayOfWeek fiveDayCard";
+        if (t == 0) {
+            fiveDayDOWElement.innerHTML = "Today";
+        } else {
+            fiveDayDOWElement.innerHTML = dailyDayOfWeek[t];
+        };
+        
+        // Append to container
+        fiveDayForecastCard.appendChild(fiveDayDOWElement);
+
+        // Step 2 Get date
+        let fiveDayActDateElement = document.createElement("div");
+        fiveDayActDateElement.classList = "actualDate fiveDayCard";
+        fiveDayActDateElement.innerHTML = dailyDate[t];
+        
+        // Append Card container
+        fiveDayForecastCard.appendChild(fiveDayActDateElement);
+
+        // Step 3a Get icon URL and build containing div
+        // <img src="/assets/images/01d@1x.png" />
+        let fiveDayIconElement = document.createElement("div");
+        fiveDayIconElement.classList = "fiveDayIcon fiveDayCard";
+        
+        // Append to Card container
+        fiveDayForecastCard.appendChild(fiveDayIconElement);
+        
+        // Step 3b Create img 
+        let fiveDayIconImgElement = document.createElement("img");
+        fiveDayIconImgElement.setAttribute("src", "/assets/images/" + dailyWeatherIcon[t] + "@1x.png");
+
+        // Append to Card container
+        fiveDayIconElement.appendChild(fiveDayIconImgElement);
+
+        // Append to container
+        fiveDayForecastCards.appendChild(fiveDayForecastCard);
+    };
     
     fiveDayForecastHeader.style.display = "block";
     fiveDayForecastCardContainer.style.display = "block";
@@ -704,6 +870,7 @@ let searchHistoryClick = function(event) {
 window.addEventListener('load', function() {
     cityName.blur();
     // Check to see if there is any search history in local storage
+    constructDate();
     checkSearchHistory();
     
     browserWidth = window.innerWidth;
