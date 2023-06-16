@@ -270,6 +270,7 @@ let lookUpCity = function(location) {
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
+            console.log(geoAPIUrl);
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
@@ -299,7 +300,7 @@ let lookUpCity = function(location) {
             };
         })
         .catch(function(error) {
-            alert("Error: City cound not be found.");
+            alert("Error: Problem connecting to the API.");
         });
 };
 
