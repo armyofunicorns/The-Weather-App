@@ -48,7 +48,9 @@ const dailyWindDegrees = [];
 const dailyWeatherIcon = [];
 const dailyClouds = [];
 const dailyPOP = [];
+const dailyPOPConverted = [];
 const dailyUVI = [];
+const displayBottomUVI = [];
 const displayCity = [];
 const displayState = [];
 const displayLat = [];
@@ -418,6 +420,7 @@ let pullWeather = function(weatherData, searchTerm) {
     currentPressure = weatherData.current.pressure + "hPA";
     currentHumidity = weatherData.current.humidity + "%";
     currentUVIndex = Math.round(weatherData.current.uvi * 10)/10;
+    getUVIndexVale(currentUVIndex,"currentUVIndex",0);
     currentClouds = weatherData.current.clouds;
     currentWindSpeed = Math.round(weatherData.current.wind_speed) + "mph";
     currentWindSpeedWo = Math.round(weatherData.current.wind_speed);
@@ -467,7 +470,7 @@ let pullWeather = function(weatherData, searchTerm) {
     getPressure(weatherData.current.pressure);
         
     // Determine the sub text for uv index value
-    getUVIndexVale(currentUVIndex, "currentUVIndex");
+    (currentUVIndex, "currentUVIndex");
 
     // Determine the sub text for wind speed value
     getWindSpeed(currentWindSpeedWo);   
@@ -505,6 +508,9 @@ let pullWeather = function(weatherData, searchTerm) {
         let dailyWeatherIconURL = "/assets/images/" + dailyWeatherIcon[i] + "@1x.png";
         dailyClouds[i] = weatherData.daily[i].clouds;
         dailyPOP[i] = weatherData.daily[i].pop;
+        dailyPOPConverted[i] = Math.round(dailyPOP[i] * 100);
+        getPOP(dailyPOPConverted[i],i);
+
         dailyUVI[i] = weatherData.daily[i].uvi;
 
         /* Now update the UI */
@@ -628,7 +634,7 @@ function display5Day(t) {
         // Determine the sub text for uv index value
         let fiveDayBottomInnerLeftStat7 = document.createElement("div");
         fiveDayBottomInnerLeftStat7.classList = "fiveDayCard actualDate";
-        fiveDayBottomInnerLeftStat7.innerHTML = getUVIndexVale(dailyUVIndex, "dailyUVIndex");
+        fiveDayBottomInnerLeftStat7.innerHTML = getUVIndexVale(dailyUVIndex,"dailyUVIndex",t);
 
         // Append to Bottom Left Container
         fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat7);
@@ -680,8 +686,8 @@ function display5Day(t) {
         // <div class="fiveDayCard actualTime">5.6</div>
         let fiveDayBottomInnerRightStat5 = document.createElement("div");
         fiveDayBottomInnerRightStat5.classList = "fiveDayCard actualTime";
-        fiveDayBottomInnerRightStat5.innerHTML = dailyPOP[t] * 100;
-
+        fiveDayBottomInnerRightStat5.innerHTML = (Math.round(dailyPOP[t] * 100)) + "%";
+        
         // Append to Bottom Right Container
         fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat5);
 
@@ -699,13 +705,18 @@ function display5Day(t) {
         // Determine the sub text for uv index value
         let fiveDayBottomInnerRightStat7 = document.createElement("div");
         fiveDayBottomInnerRightStat7.classList = "fiveDayCard actualDate";
-        fiveDayBottomInnerRightStat7.innerHTML = getUVIndexVale(dailyUVIndex, "dailyUVIndex");
+        fiveDayBottomInnerRightStat7.innerHTML = dailyPOPConverted[t];
 
         // Append to Bottom Right Container
         fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat7);
         
         //  ---------------
 
+        // Append to container
+        fiveDayBottomInnerContainer.appendChild(fiveDayBottomInnerLeftContainer);
+
+        // Append to container
+        fiveDayBottomInnerContainer.appendChild(fiveDayBottomInnerRightContainer);
 
         // Append to container
         fiveDayForecastCards.appendChild(fiveDayForecastCard);
@@ -771,8 +782,37 @@ function getPressure(valuePressure) {
     return;
 };
 
-function getUVIndexVale(valueUVI, whatUVIVarName) {
+function getPOP(valuePOP,value) {
+    if (valuePOP == 0) {
+        return dailyPOPConverted[value] = "no chance";
+    } else if (valuePOP <= 10) {
+        return dailyPOPConverted[value] = "minimal";
+    } else if ((valuePOP > 10) && (valuePOP <= 20)) {
+        return dailyPOPConverted[value] = "pretty low";
+    } else if ((valuePOP > 20) && (valuePOP <= 30)) {
+        return dailyPOPConverted[value] = "low";
+    } else if ((valuePOP > 30) && (valuePOP <= 40)) {
+        return dailyPOPConverted[value] = "maybe";
+    } else if ((valuePOP > 40) && (valuePOP <= 50)) {
+        return dailyPOPConverted[value] = "maybe sorta";
+    } else if ((valuePOP > 50) && (valuePOP <= 60)) {
+        return dailyPOPConverted[value] = "moderate";
+    } else if ((valuePOP > 60) && (valuePOP <= 70)) {
+        return dailyPOPConverted[value] = "pretty high";
+    } else if ((valuePOP > 70) && (valuePOP <= 80)) {
+        return dailyPOPConverted[value] = "high";
+    } else if ((valuePOP > 80) && (valuePOP <= 90)) {
+        return dailyPOPConverted[value] = "very likely";
+    } else {
+        return dailyPOPConverted[value] = "it will rain";
+    };
+}
+
+function getUVIndexVale(valueUVI,whatUVIVarName,value) {
+    console.log(whatUVIVarName + " = " + valueUVI);
+    
     if (whatUVIVarName == "currentUVIndex") {
+        console.log("got here");
         if (valueUVI == 0) {
             // value is favorable
             statsUvIndexSub.textContent = "no worries";
@@ -790,27 +830,23 @@ function getUVIndexVale(valueUVI, whatUVIVarName) {
             statsUvIndexSub.style.color = "#FF0000";
         } else {
             statsUvIndexSub.textContent = "no data";
-        }
-        return;
+        };
     } else if (whatUVIVarName == "dailyUVIndex") {
         if (valueUVI == 0) {
             // value is favorable
-            return fiveDayBottomInnerUVIndex = "no worries";
+            return displayBottomUVI[value] = "no worries";
         } else if (valueUVI <= 2) {
             // value is favorable
-            return fiveDayBottomInnerUVIndex = "favorable";
-            // statsUvIndexSub.style.color = "#00FF00";
+            return displayBottomUVI[value] = "favorable";
         } else if ((valueUVI > 2) && (valueUVI <= 7)) {
             // value is moderate
-            return fiveDayBottomInnerUVIndex = "moderate";
-            // statsUvIndexSub.style.color = "#FFFF00";
+            return displayBottomUVI[value] = "moderate";
         } else if (valueUVI > 7) {
             // value is severe
-            return fiveDayBottomInnerUVIndex = "severe";
-            // statsUvIndexSub.style.color = "#FF0000";
+            return displayBottomUVI[value] = "severe";
         } else {
-            fiveDayBottomInnerUVIndex = "no data";
-        }
+            return displayBottomUVI[value] = "no data";
+        };
     };
 };
 
@@ -915,7 +951,6 @@ function getCurrentTime() {
 };
 
 function convertUTC(utcSeconds,timeRequestSource,value) {  
-    console.log(value);
     /* Convert utcSeconds to a Date */
     let dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
@@ -956,6 +991,13 @@ function convertUTC(utcSeconds,timeRequestSource,value) {
 let searchButtonClick = function(event) {
     // Hide and show some views
     cityName.value = "";
+    
+    for (let zz = 0; zz < 5; zz++) {
+        let fiveDayForecastCard = document.querySelector("#fiveDayForecastCard" + zz);
+        let parentDiv = fiveDayForecastCard.parentNode;
+        parentDiv.removeChild(fiveDayForecastCard);
+    };
+    
     promptModal.style.display = "block";
     searchIcon.style.display = "none";
     searchTime.style.display = "none";
