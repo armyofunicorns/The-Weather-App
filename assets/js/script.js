@@ -265,7 +265,7 @@ function constructDate() {
 let lookUpCity = function(location) {
     // Format the API URL
     let cityAPIValue = location+",,US";
-    let geoAPIUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
+    let geoAPIUrl = "https://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
 
     fetch(geoAPIUrl)
         .then(function(response) {
