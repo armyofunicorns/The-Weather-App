@@ -36,7 +36,9 @@ const dailyTempDay = [];
 const dailyTempMax = [];
 const dailyTempMin = [];
 const dailySunrise = [];
+const dailySunriseConverted = [];
 const dailySunset =  [];
+const dailySunsetConverted = [];
 const dailyMoonRise = [];
 const dailyMoonSet = [];
 const dailyMoonPhase = [];
@@ -178,11 +180,9 @@ function constructDate() {
     // Get the current day of the week
     let dayOfWeekCurrent = dateCurrent.getDay();
     let dayOfWeek3letters = getDayOfTheWeek(dayOfWeekCurrent);
-    console.log(dayOfWeek3letters);
     
     // Build the dailyDayOfWeek array
     dailyDayOfWeek.push(dayOfWeek3letters);
-    console.log(dailyDayOfWeek[0]);
 
     for (let tt=1; tt <= 6; tt++) {
         
@@ -192,11 +192,8 @@ function constructDate() {
             dayOfWeekCurrent = 0;
         };
             
-        console.log(dayOfWeekCurrent);
         dayOfWeek3letters = getDayOfTheWeek(dayOfWeekCurrent);
-        console.log(dayOfWeek3letters);
         dailyDayOfWeek.push(dayOfWeek3letters);
-        console.log(dailyDayOfWeek[tt]);
     };
 
     // Create the date array
@@ -259,8 +256,6 @@ function constructDate() {
 
         // Construct the actual date
         dailyDate[dd] = monthCurrent3letters + " " + dayCurrent3letters + ", " + yearCurrent;
-
-        console.log(dailyDate[dd]);
     };
 };
 
@@ -392,7 +387,7 @@ let saveToStorage = function(queryLocation) {
         localStorage.setItem("searchObject", JSON.stringify(searchObject));
     };
     count++;
-}
+};
 
 let pullWeather = function(weatherData, searchTerm) {
     // Check and verify if API returned any weatherData
@@ -485,7 +480,6 @@ let pullWeather = function(weatherData, searchTerm) {
     for (let i = 0; i < size + 1; i++) {
         /* Grab all daily data and store in arrays */
         dailyTime[i] = weatherData.daily[i].dt;
-        convertUTC(dailyTime[i], i);
         
         dailyTempDay[i] = weatherData.daily[i].temp.day;
         
@@ -496,7 +490,11 @@ let pullWeather = function(weatherData, searchTerm) {
         dailyTempMin[i] = Math.trunc(dailyTempMinBF);
 
         dailySunrise[i] = weatherData.daily[i].sunrise;
+        convertUTC(dailySunrise[i],"dailySunrise",i);
+        
         dailySunset[i] = weatherData.daily[i].sunset;
+        convertUTC(dailySunset[i],"dailySunset",i);
+
         dailyMoonRise[i] = weatherData.daily[i].moonrise;
         dailyMoonSet[i] = weatherData.daily[i].moonset;
         dailyMoonPhase[i] = weatherData.daily[i].moon_phase;
@@ -508,8 +506,6 @@ let pullWeather = function(weatherData, searchTerm) {
         dailyClouds[i] = weatherData.daily[i].clouds;
         dailyPOP[i] = weatherData.daily[i].pop;
         dailyUVI[i] = weatherData.daily[i].uvi;
-        // Determine the UVIndex value
-        getUVIndexVale(dailyUVI[i], "dailyUVI[" + i + "]");
 
         /* Now update the UI */
         display5Day(i);
@@ -544,7 +540,6 @@ function display5Day(t) {
         fiveDayForecastCard.appendChild(fiveDayActDateElement);
 
         // Step 3a Get icon URL and build containing div
-        // <img src="/assets/images/01d@1x.png" />
         let fiveDayIconElement = document.createElement("div");
         fiveDayIconElement.classList = "fiveDayIcon fiveDayCard";
         
@@ -557,6 +552,160 @@ function display5Day(t) {
 
         // Append to Card container
         fiveDayIconElement.appendChild(fiveDayIconImgElement);
+
+
+        // Step 4a Bottom stats main container 
+        let fiveDayBottomContainer = document.createElement("div");
+        fiveDayBottomContainer.setAttribute("id", "tempStatsContainer");
+
+        // Append to Card container
+        fiveDayForecastCard.appendChild(fiveDayBottomContainer);
+
+        // Step 4b Bottom stats inside container
+        let fiveDayBottomInnerContainer = document.createElement("div");
+        fiveDayBottomInnerContainer.classList = "flex-row justify-center align-center";
+
+        // Append to Bottom Container
+        fiveDayBottomContainer.appendChild(fiveDayBottomInnerContainer);
+
+        //  Step 4c Bottom stats inside left container
+        let fiveDayBottomInnerLeftContainer = document.createElement("div");
+        fiveDayBottomInnerLeftContainer.classList = "flex-column fifty-percentage";
+
+        // Append to Bottom Container
+        fiveDayBottomContainer.appendChild(fiveDayBottomInnerLeftContainer);
+
+        // Step 4d Bottom detailed data
+        let fiveDayBottomInnerLeftStat1 = document.createElement("div");
+        fiveDayBottomInnerLeftStat1.classList = "fiveDayCard fiveDayTemp";
+        fiveDayBottomInnerLeftStat1.innerHTML = dailyTempMax[t] + "°";
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat1);
+
+        
+        let fiveDayBottomInnerLeftStat2 = document.createElement("div");
+        fiveDayBottomInnerLeftStat2.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerLeftStat2.innerHTML = "high";
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat2);
+
+        
+        let fiveDayBottomInnerLeftStat3 = document.createElement("div");
+        fiveDayBottomInnerLeftStat3.classList = "fiveDayCard actualTime";
+        fiveDayBottomInnerLeftStat3.innerHTML = dailySunriseConverted[t];
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat3);
+
+
+        let fiveDayBottomInnerLeftStat4 = document.createElement("div");
+        fiveDayBottomInnerLeftStat4.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerLeftStat4.innerHTML = "sunrise";
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat4);
+
+        
+        let fiveDayBottomInnerLeftStat5 = document.createElement("div");
+        fiveDayBottomInnerLeftStat5.classList = "fiveDayCard actualTime";
+        let dailyUVIndex = Math.round(dailyUVI[t] * 10)/10;
+        fiveDayBottomInnerLeftStat5.innerHTML = dailyUVIndex;
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat5);
+
+        
+        let fiveDayBottomInnerLeftStat6 = document.createElement("div");
+        fiveDayBottomInnerLeftStat6.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerLeftStat6.innerHTML = "uv index";
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat6);
+
+
+        // Determine the sub text for uv index value
+        let fiveDayBottomInnerLeftStat7 = document.createElement("div");
+        fiveDayBottomInnerLeftStat7.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerLeftStat7.innerHTML = getUVIndexVale(dailyUVIndex, "dailyUVIndex");
+
+        // Append to Bottom Left Container
+        fiveDayBottomInnerLeftContainer.appendChild(fiveDayBottomInnerLeftStat7);
+
+        
+        // ----------
+        //  Step 4e Bottom stats inside right container
+        let fiveDayBottomInnerRightContainer = document.createElement("div");
+        fiveDayBottomInnerRightContainer.classList = "flex-column fifty-percentage";
+
+        // Append to Bottom Container
+        fiveDayBottomContainer.appendChild(fiveDayBottomInnerRightContainer);
+
+        // Step 4f Bottom detailed data
+        let fiveDayBottomInnerRightStat1 = document.createElement("div");
+        fiveDayBottomInnerRightStat1.classList = "fiveDayCard fiveDayTemp";
+        fiveDayBottomInnerRightStat1.innerHTML = dailyTempMin[t] + "°";
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat1);
+
+        
+        let fiveDayBottomInnerRightStat2 = document.createElement("div");
+        fiveDayBottomInnerRightStat2.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerRightStat2.innerHTML = "low";
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat2);
+
+        
+        // <div class="fiveDayCard actualTime">6:21am</div>
+        let fiveDayBottomInnerRightStat3 = document.createElement("div");
+        fiveDayBottomInnerRightStat3.classList = "fiveDayCard actualTime";
+        fiveDayBottomInnerRightStat3.innerHTML = dailySunsetConverted[t];
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat3);
+
+        
+        // <div class="fiveDayCard actualDate">sunrise</div>
+        let fiveDayBottomInnerRightStat4 = document.createElement("div");
+        fiveDayBottomInnerRightStat4.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerRightStat4.innerHTML = "sunset";
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat4);
+
+        
+        // <div class="fiveDayCard actualTime">5.6</div>
+        let fiveDayBottomInnerRightStat5 = document.createElement("div");
+        fiveDayBottomInnerRightStat5.classList = "fiveDayCard actualTime";
+        fiveDayBottomInnerRightStat5.innerHTML = dailyPOP[t] * 100;
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat5);
+
+        
+        // <div class="fiveDayCard actualDate">uv index</div>
+        let fiveDayBottomInnerRightStat6 = document.createElement("div");
+        fiveDayBottomInnerRightStat6.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerRightStat6.innerHTML = "rain probability";
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat6);
+
+
+        // <div class="fiveDayCard actualDate">seek shade</div>
+        // Determine the sub text for uv index value
+        let fiveDayBottomInnerRightStat7 = document.createElement("div");
+        fiveDayBottomInnerRightStat7.classList = "fiveDayCard actualDate";
+        fiveDayBottomInnerRightStat7.innerHTML = getUVIndexVale(dailyUVIndex, "dailyUVIndex");
+
+        // Append to Bottom Right Container
+        fiveDayBottomInnerRightContainer.appendChild(fiveDayBottomInnerRightStat7);
+        
+        //  ---------------
+
 
         // Append to container
         fiveDayForecastCards.appendChild(fiveDayForecastCard);
@@ -643,6 +792,25 @@ function getUVIndexVale(valueUVI, whatUVIVarName) {
             statsUvIndexSub.textContent = "no data";
         }
         return;
+    } else if (whatUVIVarName == "dailyUVIndex") {
+        if (valueUVI == 0) {
+            // value is favorable
+            return fiveDayBottomInnerUVIndex = "no worries";
+        } else if (valueUVI <= 2) {
+            // value is favorable
+            return fiveDayBottomInnerUVIndex = "favorable";
+            // statsUvIndexSub.style.color = "#00FF00";
+        } else if ((valueUVI > 2) && (valueUVI <= 7)) {
+            // value is moderate
+            return fiveDayBottomInnerUVIndex = "moderate";
+            // statsUvIndexSub.style.color = "#FFFF00";
+        } else if (valueUVI > 7) {
+            // value is severe
+            return fiveDayBottomInnerUVIndex = "severe";
+            // statsUvIndexSub.style.color = "#FF0000";
+        } else {
+            fiveDayBottomInnerUVIndex = "no data";
+        }
     };
 };
 
@@ -743,10 +911,11 @@ function getWindDirection(valueDirection) {
 function getCurrentTime() {
     /* Get the current time */
     let currentTime = Math.floor(new Date().getTime()/1000.0);
-    convertUTC(currentTime);
+    convertUTC(currentTime,"currentTime","none");
 };
 
-function convertUTC(utcSeconds) {
+function convertUTC(utcSeconds,timeRequestSource,value) {  
+    console.log(value);
     /* Convert utcSeconds to a Date */
     let dtDate = new Date(0);
     dtDate.setUTCSeconds(utcSeconds);
@@ -755,35 +924,32 @@ function convertUTC(utcSeconds) {
     let dtDateString = String(dtDate);
 
     /* Parse the day of the week, month, day, year */
-    // Thu Apr 06 2023 13:00:00 GMT-0700 (Pacific Daylight Time)
     let splitDateArray = dtDateString.split(" ");
-    
     let onlyTime = splitDateArray[4];
     
-    displayTime(onlyTime);
-    return;
-};
-
-function displayTime(onlyTime) {
-    if (delFlag == 1) {
-
-    } else {
-        delFlag = 1;
-
-        let onlyTimeConverted = onlyTime.split(":");
-        let onlyTimeDay;
-        let onlyTimeConvertFirstNumber;
-
+    let onlyTimeConverted = onlyTime.split(":");
+    let onlyTimeDay;
+    let onlyTimeConvertFirstNumber;
+    
+    if (timeRequestSource == "dailySunrise") {
+        onlyTimeDay = "am";
+        onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]);
+        return dailySunriseConverted[value] = onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
+    } else if (timeRequestSource == "dailySunset") {
+        onlyTimeDay = "pm";
+        onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
+        return dailySunsetConverted[value] = onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
+    } else if (timeRequestSource == "currentTime") {
         if (Number(onlyTimeConverted[0] > 12)) {
-            onlyTimeDay = "PM";
+            onlyTimeDay = "pm";
             onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
         } else {
-            onlyTimeDay = "AM";
+            onlyTimeDay = "am";
             onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]);
         };
-        searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
-        return;   
-    }
+        return searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
+    };
+    
 };
 
 // Function to display the search modal when search icon is clicked
