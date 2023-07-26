@@ -270,7 +270,6 @@ let lookUpCity = function(location) {
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
-            console.log(response);
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
