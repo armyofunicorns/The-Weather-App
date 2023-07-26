@@ -6,6 +6,7 @@ let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
 let count = 0;
 let counter = 0;
 let delFlag;
+let areCardsDisplayed = false;
 let locationAlreadyInArray;
 let currentDate;
 let monthCurrent3letters;
@@ -66,6 +67,7 @@ let searchIcon = document.querySelector(".searchIcon");
 let searchTime = document.querySelector(".searchTime");
 let searchTemp = document.querySelector(".searchTemp");
 let titleApp = document.querySelector(".appTitle");
+let introTitle = document.querySelector("#introTitle");
 let subTitle = document.querySelector(".subTitle");
 let pastSearchesContainer = document.querySelector("#pastSearchesContainer");
 let citySearchNumber = document.querySelector("#city-search-number");
@@ -266,14 +268,15 @@ let lookUpCity = function(location) {
     // Format the API URL
     let cityAPIValue = location+",,US";
     let geoAPIUrl = "https://api.openweathermap.org/geo/1.0/direct?q="+cityAPIValue+"&limit=50&appid="+apiKey;
-
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
-                    if (geoData.length > 1) {
+                    if (geoData.length == 0) {
+                        errorNoCityName(location);
+                    } else if (geoData.length > 1) {                        
                         selectWhichCity(geoData);
                         saveToStorage(location);
                         createSearchHistoryButton(location);
@@ -287,6 +290,7 @@ let lookUpCity = function(location) {
                         citySearchTerm.textContent = toTitleCase(location);
                     } else {
                         let locationName = geoData[0].name;
+                        console.log("locationName = " + locationName);
                         let latValue = geoData[0].lat;
                         let lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
@@ -394,7 +398,7 @@ let saveToStorage = function(queryLocation) {
 let pullWeather = function(weatherData, searchTerm) {
     // Check and verify if API returned any weatherData
     let size = Object.keys(weatherData).length;
-    if (size === 0) {
+    if (size == 0) {
         weatherContainer.textContent = "No city by that name found. Please try again.";
         return;
     }
@@ -519,6 +523,8 @@ let pullWeather = function(weatherData, searchTerm) {
 };
 
 function display5Day(t) {
+    areCardsDisplayed = true;
+    console.log(areCardsDisplayed);
     if (t < 5) {
         // Create the outer card for each day
         let fiveDayForecastCard = document.createElement("div");
@@ -984,18 +990,38 @@ function convertUTC(utcSeconds,timeRequestSource,value) {
     
 };
 
+function errorNoCityName(location) {
+    // Hide and show some views
+    cityName.value = "";
+    promptModal.style.display = "block";
+    introTitle.textContent = "Could not find a city named " + location + ". Please try again.";
+    searchIcon.style.display = "none";
+    searchTime.style.display = "none";
+    searchTemp.style.display = "none";
+    selectCityContainer.style.display = "none";
+    currentConditionsContainer.style.display = "none";
+    currentWeatherContainer.style.display = "none";
+    currentWeatherStatsContainer.style.display = "none";
+    fiveDayForecastHeader.style.display = "none"; 
+    fiveDayForecastCardContainer.style.display = "none";
+}
+
 // Function to display the search modal when search icon is clicked
 let searchButtonClick = function(event) {
     // Hide and show some views
     cityName.value = "";
     
-    for (let zz = 0; zz < 5; zz++) {
-        let fiveDayForecastCard = document.querySelector("#fiveDayForecastCard" + zz);
-        let parentDiv = fiveDayForecastCard.parentNode;
-        parentDiv.removeChild(fiveDayForecastCard);
+    if (areCardsDisplayed == true) {  
+        for (let zz = 0; zz < 5; zz++) {
+            let fiveDayForecastCard = document.querySelector("#fiveDayForecastCard" + zz);
+            let parentDiv = fiveDayForecastCard.parentNode;
+            parentDiv.removeChild(fiveDayForecastCard);
+        };
+        areCardsDisplayed == false;
     };
     
     promptModal.style.display = "block";
+    introTitle.textContent = "What city do you want the weather for?";
     searchIcon.style.display = "none";
     searchTime.style.display = "none";
     searchTemp.style.display = "none";
