@@ -411,7 +411,7 @@ input:blur::placeholder {
 }
 
 #submitBtn {
-  display: block;
+  display: none;
 }
 
 /* HEIGHT / WIDTH UTILS */
