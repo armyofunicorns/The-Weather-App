@@ -270,7 +270,7 @@ let lookUpCity = function(location) {
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
-            console.log(geoAPIUrl);
+            console.log(response);
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
@@ -810,10 +810,7 @@ function getPOP(valuePOP,value) {
 }
 
 function getUVIndexVale(valueUVI,whatUVIVarName,value) {
-    console.log(whatUVIVarName + " = " + valueUVI);
-    
     if (whatUVIVarName == "currentUVIndex") {
-        console.log("got here");
         if (valueUVI == 0) {
             // value is favorable
             statsUvIndexSub.textContent = "no worries";
@@ -968,19 +965,19 @@ function convertUTC(utcSeconds,timeRequestSource,value) {
     let onlyTimeConvertFirstNumber;
     
     if (timeRequestSource == "dailySunrise") {
-        onlyTimeDay = "am";
+        onlyTimeDay = " AM";
         onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]);
         return dailySunriseConverted[value] = onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
     } else if (timeRequestSource == "dailySunset") {
-        onlyTimeDay = "pm";
+        onlyTimeDay = " PM";
         onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
         return dailySunsetConverted[value] = onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
     } else if (timeRequestSource == "currentTime") {
         if (Number(onlyTimeConverted[0] > 12)) {
-            onlyTimeDay = "pm";
+            onlyTimeDay = " PM";
             onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]) - 12;
         } else {
-            onlyTimeDay = "am";
+            onlyTimeDay = " AM";
             onlyTimeConvertFirstNumber = Number(onlyTimeConverted[0]);
         };
         return searchTime.textContent = "current time is " + onlyTimeConvertFirstNumber + ":" + onlyTimeConverted[1] + onlyTimeDay;
