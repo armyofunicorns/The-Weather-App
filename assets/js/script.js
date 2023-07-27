@@ -407,7 +407,7 @@ let pullWeather = function(weatherData, searchTerm) {
     //citySearchTerm.textContent = searchTerm; 
 
     // First, let's update the heading...
-    titleApp.textContent = "The weather in " + searchTerm + " is...";
+    titleApp.textContent = "";
 
     // Second, let's hide the subTitle (results text)
     subTitle.style.display = "none";
@@ -516,6 +516,9 @@ let pullWeather = function(weatherData, searchTerm) {
         getPOP(dailyPOPConverted[i],i);
 
         dailyUVI[i] = weatherData.daily[i].uvi;
+
+        // Finally, let's update the heading...
+        titleApp.textContent = "The weather in " + searchTerm + " is...";
 
         /* Now update the UI */
         display5Day(i);
@@ -993,8 +996,9 @@ function convertUTC(utcSeconds,timeRequestSource,value) {
 function errorNoCityName(location) {
     // Hide and show some views
     cityName.value = "";
+    titleApp.textContent = "";
     promptModal.style.display = "block";
-    introTitle.textContent = "Could not find a city named " + location + ". Please try again.";
+    introTitle.textContent = "No city named '" + location + ".' Try again.";
     searchIcon.style.display = "none";
     searchTime.style.display = "none";
     searchTemp.style.display = "none";
@@ -1010,6 +1014,7 @@ function errorNoCityName(location) {
 let searchButtonClick = function(event) {
     // Hide and show some views
     cityName.value = "";
+    titleApp.textContent = "";
     
     if (areCardsDisplayed == true) {  
         for (let zz = 0; zz < 5; zz++) {
