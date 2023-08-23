@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on June 8, 2023 */
+/* Updated on August 23, 2023 */
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
