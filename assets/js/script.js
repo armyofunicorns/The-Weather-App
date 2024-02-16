@@ -1,5 +1,5 @@
 /* Created by Anthony Hall */
-/* Updated on June 8, 2023 */
+/* Updated on February 16, 2024 */
 
 /* Define global vars */
 let apiKey = "95b40b7251d7c4d04d5bc72b6c0d970e";
@@ -201,41 +201,42 @@ function constructDate() {
     // Create the date array
     for (let dd=0; dd < 5; dd++) {
         // Figure out the month
-        if (monthCurrent == 1) {
+        console.log("The month is " + monthCurrent)
+        if (monthCurrent == 0) {
             monthCurrent3letters = "Jan";
             maxDays = 31;
-        } else if (monthCurrent == 2) {
+        } else if (monthCurrent == 1) {
             monthCurrent3letters = "Feb";
             if ((yearCurrent == 2024) || (yearCurrent == 2028)) {
                 maxDays = 29;
             } else {
                 maxDays = 28;
             };
-        } else if (monthCurrent == 3) {
+        } else if (monthCurrent == 2) {
             monthCurrent3letters = "Mar";
             maxDays = 31;
-        } else if (monthCurrent == 4) {
+        } else if (monthCurrent == 3) {
             monthCurrent3letters = "Apr";
             maxDays = 30;
-        } else if (monthCurrent == 5) {
+        } else if (monthCurrent == 4) {
             monthCurrent3letters = "May";
             maxDays = 31;
-        } else if (monthCurrent == 6) {
+        } else if (monthCurrent == 5) {
             monthCurrent3letters = "Jun";
             maxDays = 30;
-        } else if (monthCurrent == 7) {
+        } else if (monthCurrent == 6) {
             monthCurrent3letters = "Jul";
             maxDays = 31;
-        } else if (monthCurrent == 8) {
+        } else if (monthCurrent == 7) {
             monthCurrent3letters = "Aug";
             maxDays = 31;
-        } else if (monthCurrent == 9) {
+        } else if (monthCurrent == 8) {
             monthCurrent3letters = "Sep";
             maxDays = 30;
-        } else if (monthCurrent == 10) {
+        } else if (monthCurrent == 9) {
             monthCurrent3letters = "Oct";
             maxDays = 31;
-        } else if (monthCurrent == 11) {
+        } else if (monthCurrent == 10) {
             monthCurrent3letters = "Nov";
             maxDays = 30;
         } else {
@@ -270,7 +271,6 @@ let lookUpCity = function(location) {
     fetch(geoAPIUrl)
         .then(function(response) {
             // request was successful
-            console.log(geoAPIUrl);
             if (response.ok) {
                 response.json().then(function(geoData) {
                     // Identify the length of geoData array
@@ -810,10 +810,7 @@ function getPOP(valuePOP,value) {
 }
 
 function getUVIndexVale(valueUVI,whatUVIVarName,value) {
-    console.log(whatUVIVarName + " = " + valueUVI);
-    
     if (whatUVIVarName == "currentUVIndex") {
-        console.log("got here");
         if (valueUVI == 0) {
             // value is favorable
             statsUvIndexSub.textContent = "no worries";
