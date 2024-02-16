@@ -203,7 +203,6 @@ function constructDate() {
     // Create the date array
     for (let dd=0; dd < 5; dd++) {
         // Figure out the month
-        console.log("The month is " + monthCurrent)
         if (monthCurrent == 0) {
             monthCurrent3letters = "Jan";
             maxDays = 31;
@@ -291,7 +290,6 @@ let lookUpCity = function(location) {
                         citySearchTerm.textContent = toTitleCase(location);
                     } else {
                         let locationName = geoData[0].name;
-                        console.log("locationName = " + locationName);
                         let latValue = geoData[0].lat;
                         let lonValue = geoData[0].lon;
                         getCityWeather(locationName, latValue, lonValue);
@@ -528,7 +526,6 @@ let pullWeather = function(weatherData, searchTerm) {
 
 function display5Day(t) {
     areCardsDisplayed = true;
-    console.log(areCardsDisplayed);
     if (t < 5) {
         // Create the outer card for each day
         let fiveDayForecastCard = document.createElement("div");
